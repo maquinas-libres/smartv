@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+#	torrent o magnet
+#
+
+wget -qO - $1 | grep -o "https\?://[^\"'\\\)<]\+" | while read TOR; do
+	lynx $TOR -dump -nonumbers | grep "^magnet:\|\.torrent$" && exit
+done
