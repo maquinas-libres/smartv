@@ -1,10 +1,9 @@
-sudo -u pi /home/pi/bin/torrent-peerflix
-
 reproductor
 	omxplayer
+	mplayer
 
 subtitulos
-	?
+	subdl
 	
 buscador (lupa)
 	torrent-search.sf.net	→ python-libxml2 python-httplib2
