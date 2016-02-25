@@ -1,0 +1,5 @@
+sync
+echo s > /proc/sysrq-trigger
+echo u > /proc/sysrq-trigger
+echo o > /proc/sysrq-trigger
+

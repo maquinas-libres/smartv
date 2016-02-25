@@ -1,0 +1,54 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          asplashscreen
+# Required-Start:
+# Required-Stop:
+# Should-Start:
+# Default-Start:     S
+# Default-Stop: 0 6
+# Short-Description: Show custom splashscreen
+# Description:       Show custom splashscreen
+### END INIT INFO
+
+do_start () {
+    echo -ne "\e[?25l"
+    clear > /dev/tty1
+    local config="/etc/splashscreen.list"
+    local line="$(head -1 "$config")"
+    if $(echo "$line" | grep -q ".avi\|.mov\|.mp4\|.mkv\|.3gp\|.mpg\|.mp3\|.wav\|.m4a\|.aac\|.ogg\|.flac"); then
+        while ! touch /tmp/writable; do
+            sleep 1
+        done
+        omxplayer -b --layer 10000 "$line"
+        rm /tmp/writable
+    else
+        local count=$(wc -l <"$config")
+        [ $count -eq 0 ] && count=1
+        [ $count -gt 20 ] && count=20
+        local delay=$((20/count))
+        fbi -T 2 -once -t $delay -noverbose -a -l "$config" >/dev/null 2>&1
+    fi
+    exit 0
+}
+
+case "$1" in
+  start|"")
+    do_start &
+    ;;
+  restart|reload|force-reload)
+    echo "Error: argument '$1' not supported" >&2
+    exit 3
+    ;;
+  stop)
+    do_start &
+    ;;
+  status)
+    exit 0
+    ;;
+  *)
+    echo "Usage: asplashscreen [start|stop]" >&2
+    exit 3
+    ;;
+esac
+
+:
