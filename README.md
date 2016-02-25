@@ -10,7 +10,7 @@ reproductor
 subtitulos
 ----------
 
-* subdl
+* [subdl](https://github.com/akexakex/subdl)
 	
 buscador
 --------
