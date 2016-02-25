@@ -1,1 +1,30 @@
-/home/eduardo/bin/torrent-subtitulos
+#!/bin/bash
+#
+#	busca subtitulos
+#
+
+cd $(mktemp -d)
+
+NOMBRE="$*"
+
+BUSQUEDA=$(echo "$NOMBRE" | sed 's/....$//; s/\./ /g; s/\(\(19\|20\)[0-9][0-9]\).*$/\1/g'  | cut -d')' -f1 | cut -d'-' -f1 | sed "s/^ *//g; s/ *$//; s/\ /%20/g")
+
+echo $BUSQUEDA > /dev/stderr
+
+# ID en imbd
+IMDB=$(lynx https://www.startpage.com/do/m/mobilesearch?q=${BUSQUEDA}%20host%3Aimdb.com -dump -nonumbers | grep "^http://www.imdb.com" | cut -d/ -f5 | sort -u | grep "^tt" | head -n1)
+
+echo $IMDB > /dev/stderr
+
+touch "$NOMBRE"
+
+IDD=$(subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb "$NOMBRE"  2> /dev/null \
+| grep $(echo $NOMBRE | sed 's/[^a-zA-Z0-9\.,\-]/./g; s/....$//') | cut -d'[' -f1 | sed 's/[^0-9]//g')
+
+echo $IDD > /dev/stderr
+
+subdl --lang=spa --imdb-id=$IMDB --download="$IDD" --force-imdb "$NOMBRE" 2> /dev/null 1> /dev/null
+
+
+rename 's/[^0-9a-zA-Z]//g' *srt
+[ ! "$(ls *srt)" == "" ] && echo "$(pwd)/$(ls *srt | head -n1)"
