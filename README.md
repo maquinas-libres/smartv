@@ -1,10 +1,44 @@
 TorrentTV para GNU/Linux
 ========================
 
+
+![busca](img/inicio.png)
+
+Como usarlo
+-----------
+
+![busca](img/buscar.png)
+	
+![elegi](img/elegi.png)
+
+![mira](img/mira.png)
+
+Novedades
+---------
+
+![feed](img/novedades.png)
+
+-- 
+
+Que tiene
+=========
+
 splash
 ------
 
 * fbi
+
+Iconos
+------
+
+* mate-icon-theme-faenza
+
+Tema
+----
+
+http://gnome-look.org/content/download.php?content=168447&id=1&tan=71798382
+
+https://www.maketecheasier.com/9-great-lxde-themes/
 
 reproductor
 -----------
@@ -37,11 +71,13 @@ mensajes
 --------
 
 * notify-send	→ se necesita una ventana interior
+libnotify-bin
 
 novedades
 ---------
 
 * liferea
+* conky | para el clima en pantalla
 
 navegador
 ---------
@@ -51,6 +87,14 @@ navegador
 	
 extras
 ------
+
+###textos
+
+* calibre?
+* comix
+* evince
+* openoffice
+
 
 ###chat
 
