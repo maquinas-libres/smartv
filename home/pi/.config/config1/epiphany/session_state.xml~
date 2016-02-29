@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<session>
+	 <window x="0" y="0" width="325" height="133" active-tab="0" role="epiphany-window-14874661">
+	 	 <embed url="about:overview" title="P&#xE1;gina en blanco" loading="true"/>
+	 </window>
+	 <window x="0" y="52" width="1280" height="667" active-tab="0" role="epiphany-window-5ba4b453">
+	 	 <embed url="about:overview" title="M&#xE1;s visitados"/>
+	 </window>
+</session>

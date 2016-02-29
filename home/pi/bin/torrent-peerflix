@@ -8,11 +8,18 @@ MENSAJE=$(which notify-send)
 PEERFLIX=$(which peerflix)
 DESCARGA=$(which transmission-gtk)
 
-$MENSAJE "Procesando ... "
+$MENSAJE "Abriendo $1"
 
-TITULO=$(echo | $PEERFLIX -l "$1" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g") 
+B=$1
+[ ! -f "$1" ] && [ "$(echo $1 | grep '^magent')" == "" ] && B=$(torrent-buscar "$1")
+
+$MENSAJE "Url $B"
+
+TITULO=$(echo | $PEERFLIX -l "$B" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
+
 lista () {
 	zenity --title "Lista de archivos" --list --text="Seleciones un o más archivos de descargar" --hide-header --column N --column TITULO --column peso  --hide-column=1 | cut -d"|" -f1
+	# falta agregar el tipo de archivo
 }
 # identificar el mimetype
 
@@ -26,7 +33,7 @@ if [ ! "$PELICULAS" == "" ]; then
 		N=$(echo -e "$PELICULAS\nTODO\nDescargar Todos (y ver despues)"  | sed 's/\:/\n/g; s/\ *$//g' | lista ) \
 		|| N=$(echo "$PELICULAS" | cut -d':' -f1 | sed 's/\ *$//g')
 	# falta la opcion de descargar completo
-	[ "$N" == "TODO" ] && $DESCARGA $1 && exit
+	[ "$N" == "TODO" ] && $DESCARGA $B && exit
 	[ "$N" == "" ] && $MENSAJE "ocurrio un error :(" && exit # tal vez enviar un error
 
 	# descaga la pelicula
@@ -42,11 +49,11 @@ if [ ! "$PELICULAS" == "" ]; then
 	[ ! "$SUB" == "" ] && PSUB=" --sub=$SUB "
 
 	# Preguntar si desa descargarla o verla
-	x-terminal-emulator -T "Descargando $NOMBRE" -e "$PEERFLIX "$1" -i $N -k -- -fs $PSUB "
-
+	x-terminal-emulator -T "Descargando $NOMBRE" -e "$PEERFLIX "$B" -i $N -k -- -fs $PSUB "
 	exit
 fi
 
+# esto deberia ser parte de la lista
 TIPO=$(echo "historietas	cb.
 música	mp3|oga|aif|wav
 imágenes	png|jpg|bmp
@@ -58,7 +65,7 @@ done | grep -v "^0" )
 
 $MENSAJE "$TIPO"
 
-[ "$N" == "TODO" ] && $DESCARGA $1
+[ "$N" == "TODO" ] && $DESCARGA $B
 
 #N=$(echo -e "$TITULO\nTODO:Descargar Todo" | sed 's/\:/\n/g; s/\ $//g' | lista)
 

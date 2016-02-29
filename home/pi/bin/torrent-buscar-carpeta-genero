@@ -1,0 +1,76 @@
+#!/bin/bash
+#
+#	busca novedades y las descarga en una carpeta
+#
+
+# comprobar si hay red
+
+# carpeta para el cache
+mkdir ~/.cache/imdb/ 2> /dev/null
+# directorio de videos
+VIDEO="$(xdg-user-dir VIDEOS)/prueba"
+# como se ve
+PROGRAMA="..."
+# como se bucan mas
+BUSCAR="torrent-buscar-carpeta"
+
+# &languages=es
+# https://github.com/tarzasai/.flexget/blob/master/config.yml
+
+
+#genero
+echo "action	Acción
+adventure	Aventura
+animation	Animación
+biography	Biografía
+comedy	Comedía
+thriller	Triler
+crime	Crimen
+documentary	Documental
+drama	Drama
+fantasy	Fantasia
+romance	Romantica
+film-Noir	Policial
+history	Historía
+horror	Horror
+musical	Músical
+mystery	Misterio
+sci-Fi	Ciencia Ficción
+war	Belica
+western	Oeste
+music	Música
+news	Noticias
+game-Show	Espectaculo
+sport	Deportes
+family	Familiar
+talk-Show	Entrevistas" | while read G; do
+
+        DIR="$(echo "$G" | sed 's/^.*\t//g')"
+        mkdir -p "$VIDEO/$DIR" 2> /dev/null
+        GENERO="$(echo "$G" | sed 's/\t.*$//g')"
+
+
+echo "[Desktop Entry]
+Version=1.0
+Name=. Buscar
+Comment=Buscar más peliculas
+TryExec=$PROGRAMA
+Exec=$PROGRAMA $GENERO
+Icon=gtk-find
+StartupNotify=true
+Type=Application" > $VIDEO/$DIR/buscar.desktop
+
+# genera el genero que le pidan
+torrent-buscar-carpeta $GENERO "" "$VIDEO/$DIR/"
+
+done
+
+exit
+
+Quehaceres
+==========
+
+* comprobar si hay red
+
+
+

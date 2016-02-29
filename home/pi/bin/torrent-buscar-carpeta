@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+#	busca novedades y las descarga en una carpeta
+#
+
+# comprobar si hay red
+# carpeta para el cache
+mkdir ~/.cache/imdb/ 2> /dev/null
+# directorio de videos
+[ "$3" == "" ] && VIDEO="$(xdg-user-dir VIDEOS)/prueba" || VIDEO=$3
+
+# genera la carpeta si no existe
+mkdir -p "$VIDEO" 2> /dev/stderr
+
+# como se ve
+PROGRAMA="torrent-peerflix"
+# como se bucan mas
+BUSCAR="torrent-buscar-carpeta"
+
+# &languages=es
+# https://github.com/tarzasai/.flexget/blob/master/config.yml
+
+[ "$1" == "-h" ] && echo "$0 genero titulo carpeta"
+[ "$1" == "" ] && exit
+
+GENERO=$1
+TITULO="$2"
+
+wget "http://www.imdb.com/search/title?count=100&sort=num_votes,desc&title_type=feature,tv_movie&genres=${GENERO}&title=${TITULO}" -qO - \
+| grep title.*img | cut -d '"' -f2,4,6 | sed 's/\"/\t/g; s/\/title\/tt//g;' \
+| while read A; do
+
+	ID=$(echo "$A" | cut -d "	" -f1 | sed 's/[^0-9]//g')
+	echo $ID > /dev/stderr
+	[ -f "$VIDEO/$DIR/$ID.desktop" ] && continue
+	IMG=~/.cache/imdb/$ID.jpg
+	# comprobar si esta en torrentz.eu
+	URL="$(echo "$A" | cut -d "	" -f3)"
+	HD="$(echo "$URL" | sed 's/@.*$/@._V1._UY268_CR43,0,182,268_AL_.jpg/')"
+	if [ ! -f ~/.cache/imdb/$ID.jpg ]; then
+		# descarga en hd si no puede en lw y si no, no genera el link
+		wget -t 1 "$HD" -qO ~/.cache/imdb/$ID.jpg || wget -t 1 "$URL" -qO ~/.cache/imdb/$ID.jpg || continue
+	fi
+	NOMBRE=$(echo "$A" | cut -d "	" -f2 | sed 's/#xed/#xed;/g' | recode html..utf8 | sed 's/[^a-zA-Z0-9¿?¡!\.\,()\ ]//g; s/^\ *//g; s/,$//g;s/^u//')
+
+echo "[Desktop Entry]
+Version=1.0
+Name=$NOMBRE
+Comment=Una pelicula
+TryExec=$PROGRAMA
+Exec=$PROGRAMA \"$NOMBRE\"
+Icon=$IMG
+StartupNotify=true
+Type=Application" > $VIDEO/$DIR/$ID.desktop
+
+
+	echo $URL > /dev/stderr
+	echo $NOMBRE > /dev/stderr
+	sleep 1
+done
