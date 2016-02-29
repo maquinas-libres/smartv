@@ -1092,6 +1092,8 @@ GtkPopover {
 }
 
 GtkPopover.osd {
+    position: absolute;
+    bottom: 0;
     box-shadow: 0 2px 7px 3px alpha(black, 0.5);
 }
 

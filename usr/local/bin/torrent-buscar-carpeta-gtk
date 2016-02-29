@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+#
+#
+TEMP=$(mktemp -d)
+TITULO=$(zenity --entry --entry-text=buscar --text="¿Que pelicula queres ver?")
+[ ! "$TITULO" == "" ] && xdg-open "$TEMP" && torrent-buscar-carpeta " " "$TITULO" "$TEMP"

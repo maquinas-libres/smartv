@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+#	descarga y reproduce torrent
+#
+
+
+MENSAJE=$(which notify-send)
+PEERFLIX=$(which peerflix)
+DESCARGA=$(which transmission-gtk)
+
+$MENSAJE "Abriendo $1"
+
+B=$1
+[ ! -f "$1" ] && [ "$(echo $1 | grep '^magent')" == "" ] && B=$(torrent-buscar "$1")
+
+$MENSAJE "Url $B"
+
+TITULO=$(echo | $PEERFLIX -l "$B" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
+
+lista () {
+	zenity --title "Lista de archivos" --list --text="Seleciones un o más archivos de descargar" --hide-header --column N --column TITULO --column peso  --hide-column=1 | cut -d"|" -f1
+	# falta agregar el tipo de archivo
+}
+# identificar el mimetype
+
+# peliculas
+# avi mp4 mkv ogv ogg wmv mov m4v mpg mpeg
+PELICULAS=$(echo "$TITULO"| grep -i "\.\(avi\|mp4\|mkv\|m4v\|og.\|wmv\|mov\|divx\|\)\ " )
+if [ ! "$PELICULAS" == "" ]; then
+	CANTIDAD=$(echo "$PELICULAS" | wc -l)
+	# si es una serie elegis, si no busca el unico video y solo baja eso
+	[ "$CANTIDAD" -gt "1" ] && \
+		N=$(echo -e "$PELICULAS\nTODO\nDescargar Todos (y ver despues)"  | sed 's/\:/\n/g; s/\ *$//g' | lista ) \
+		|| N=$(echo "$PELICULAS" | cut -d':' -f1 | sed 's/\ *$//g')
+	# falta la opcion de descargar completo
+	[ "$N" == "TODO" ] && $DESCARGA $B && exit
+	[ "$N" == "" ] && $MENSAJE "ocurrio un error :(" && exit # tal vez enviar un error
+
+	# descaga la pelicula
+	PELICULA=$(echo "$PELICULAS" | grep "^$N\ *:")
+	# nombre de la pelicula buscada
+	NOMBRE=$(echo $PELICULA | cut -d: -f2 | sed 's/^\ *//g; s/\ *$//g')
+	$MENSAJE "Descargando $NOMBRE"
+
+	# intenta bajar los subtitulos en español
+	SUB="$(torrent-subtitulos "$NOMBRE")"
+
+	[ ! "$SUB" == "" ] && $MENSAJE "subtitulos $SUB"
+	[ ! "$SUB" == "" ] && PSUB=" --sub=$SUB "
+
+	# Preguntar si desa descargarla o verla
+	#x-terminal-emulator -T "Descargando $NOMBRE" -e "$PEERFLIX "$B" -i $N -k -- -fs $PSUB "
+	x-terminal-emulator -T "Descargando $NOMBRE" -e "$PEERFLIX "$B" -i $N -o -- $PSUB "
+	exit
+fi
+
+# esto deberia ser parte de la lista
+TIPO=$(echo "historietas	cb.
+música	mp3|oga|aif|wav
+imágenes	png|jpg|bmp
+documentos	epub|pdf|doc*|xls
+comprimidos	zip|rar|zx|gzip|7z" | while read T; do
+ 	E="$(echo "$T" | sed 's/^.*\t//g;')"
+	echo "$(echo "$TITULO" | grep -i "\.\($E\)\ " | wc -l) - $(echo $T | sed 's/\ .*$//g')"
+done | grep -v "^0" )
+
+$MENSAJE "$TIPO"
+
+[ "$N" == "TODO" ] && $DESCARGA $B
+
+#N=$(echo -e "$TITULO\nTODO:Descargar Todo" | sed 's/\:/\n/g; s/\ $//g' | lista)
+
+
+exit
+
+Quehaceres
+==========
+
+- verificar pares
+- hacer advertencias lindas para cuando se descargan cosas
+
+
+	#$PEERFLIX $1 -r -i $N -k
+	#| while read A; do echo $A; done" # -- -fs
+	# | grep downloaded  | while read A; do
+	 #       echo $A | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" | cut -d ' ' -f3 #| sed 's/MB//'
+		# si verifico esto podria saber si se consiguen pares
+	#done | zenity --text-info
+	#torrent-player $1
+	#x-terminal-emulator -T "Descargando $PELICULA" -e "$PEERFLIX $1 -i $N -r -k" | while read A; do echo $A; done" # -- -fs
+	# verificar pares

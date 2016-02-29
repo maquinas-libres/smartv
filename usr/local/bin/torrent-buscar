@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#	torrent o magnet
+#
+
+# expresiones regulares
+# sin comas y puntos
+# sin año
+# sin acentos
+#
+
+# generar un nombre|nombre|
+echo "s/[\.,()]//g
+s/[\.,]//g; s/(....)//g
+s/[\.,()]//g; y/áéíóú/aeiou/" | while read E; do
+	NOMBRE=$(echo $1 | sed "$E" | sed 's/\ /+/g')
+	HASH=$(wget -t 2 -qO - "https://torrentz.eu/feed_any?q=$NOMBRE+size+300m+-+1g" \
+	| grep Hash | sed -e 's/<[^>]*>//g' | cut -d":" -f5 | sed 's/\ //g'| head -n1)
+	[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}" && break
+done
+
+# busca descargas directas
+
+exit
+
+Quehaceres
+==========
+
+* si no encuentran nada en torrent levanta cosas en descarga directa
+* buscar el torrent con calidad (x264, 1080, 720, bluray, etc)
