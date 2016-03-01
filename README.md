@@ -64,19 +64,24 @@ novedades
 navegador
 ---------
 
-* epiphany ?
-* xxxterm ?
+* epiphany
 	
 extras
 ------
 
 ###textos
 
-* calibre?
 * comix
 * evince
 * openoffice
+* calibre?
 
+###Juegos
+
+* juntar por colores (brix, ..)
+* rompecabeza
+* aventura simple (mario 1 o bubble)
+* tableto (damas, ajedres)
 
 ###chat
 
