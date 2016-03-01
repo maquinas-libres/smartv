@@ -19,6 +19,10 @@ Novedades
 
 ![feed](img/novedades.png)
 
+Aplicaciones
+------------
+
+![feed](img/aplicaciones.png)
 
 Busca peliculas en imdb y genera archivos `.desktop` en un carpeta al presionar sobre ellos se busca la pelicula en `torrent-search`.
 Este se renueva cada X cantidad de tiempo.
@@ -91,9 +95,12 @@ extras
 Quehaceres
 ----------
 
+* portada tipo información de la pelicula
+* al generar el .desktop buscar el magnet
 * tema para osd
 * ventana cuando descarga
 * placa o imagen para cuando esta descargando
+* generar cache de las busquedas y subtitulos
 
 mirar esto:
 
