@@ -8,8 +8,6 @@ Es un conjunto de aplacaciones para armar tu televisor realmente inteligente
 Como usarlo
 -----------
 
-![busca](img/buscar.png)
-	
 ![elegi](img/elegi.png)
 
 ![mira](img/mira.png)
@@ -24,6 +22,11 @@ Aplicaciones
 
 ![feed](img/aplicaciones.png)
 
+Buscar videos
+-------------
+
+![busca](img/buscar.png)
+	
 Busca peliculas en imdb y genera archivos `.desktop` en un carpeta al presionar sobre ellos se busca la pelicula en `torrent-search`.
 Este se renueva cada X cantidad de tiempo.
 

@@ -4,6 +4,6 @@ Name=Buscar en Youtube
 Comment=Una pelicula
 TryExec=youtube-buscar-carpeta-gtk
 Exec=youtube-buscar-carpeta-gtk
-Icon=tv-me
+Icon=me-tv
 StartupNotify=true
 Type=Application
