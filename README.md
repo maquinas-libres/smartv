@@ -80,7 +80,6 @@ Quehaceres
 ----------
 
 * quitar sombra a los subtitulos
-* agregar fondo negro
 * lista negra y blanca
 * generar cache de las busquedas
 * vblog con lista de sitios (host:)
