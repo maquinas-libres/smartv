@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+#	busca subtitulos
+#
+
+NOMBRE="$1"
+
+BUSQUEDA=$(echo "$NOMBRE" | sed 's/....$//; s/\./ /g; s/\(\(19\|20\)[0-9][0-9]\).*$/\1/g'  | cut -d')' -f1 | cut -d'-' -f1 | sed "s/^ *//g; s/ *$//; s/\ /%20/g")
+lynx https://www.startpage.com/do/m/mobilesearch?q=${BUSQUEDA}%20host%3Aimdb.com -dump -nonumbers | grep "^http://www.imdb.com" | cut -d/ -f5 | sort -u | grep "^tt" | head -n1 | sed 's/[^0-9]//g'

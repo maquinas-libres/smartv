@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svnroot/torrent-search/!svn/ver/272/trunk
+END
+torrent-search
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/torrent-search/!svn/ver/220/trunk/torrent-search
+END
+setup-win.py
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svnroot/torrent-search/!svn/ver/286/trunk/setup-win.py
+END
+update-locales
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/torrent-search/!svn/ver/268/trunk/update-locales
+END
+gen-manpages
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svnroot/torrent-search/!svn/ver/225/trunk/gen-manpages
+END
+package-manpages
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svnroot/torrent-search/!svn/ver/139/trunk/package-manpages
+END
+gen-iss
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svnroot/torrent-search/!svn/ver/274/trunk/gen-iss
+END
+prebuild
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svnroot/torrent-search/!svn/ver/250/trunk/prebuild
+END
+setup.py
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svnroot/torrent-search/!svn/ver/284/trunk/setup.py
+END
+locale-list-missing-keys
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/torrent-search/!svn/ver/139/trunk/locale-list-missing-keys
+END
+torrent-search-gnomeapplet
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/torrent-search/!svn/ver/139/trunk/torrent-search-gnomeapplet
+END
+torrent-search.ico
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/torrent-search/!svn/ver/274/trunk/torrent-search.ico
+END
+torrent-search.iss
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/torrent-search/!svn/ver/284/trunk/torrent-search.iss
+END
+torrent_search.pmp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/torrent-search/!svn/ver/240/trunk/torrent_search.pmp
+END

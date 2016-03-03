@@ -1,7 +1,8 @@
 #!/bin/bash
 #
+#	busca peliculas por nombre
 #
-#
-TEMP=$(mktemp -d)
-TITULO=$(zenity --entry --entry-text=buscar --text="¿Que pelicula queres ver?")
+TITULO=$(zenity --entry --entry-text=buscar --text="¿Que pelicula queres ver?" | sed 's/[^a-zA-Z0-9\ \.,¡!¿?]//g')
+TEMP="/tmp/Buscar/$TITULO"
+mkdir -p "$TEMP" 2> /dev/null
 [ ! "$TITULO" == "" ] && xdg-open "$TEMP" && torrent-buscar-carpeta " " "$TITULO" "$TEMP"

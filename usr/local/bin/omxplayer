@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cp /usr/local/share/negro.jpg /tmp/bg.jpg &
+echo > /tmp/info
+x-terminal-emulator -e "/usr/bin/omxplayer $*"

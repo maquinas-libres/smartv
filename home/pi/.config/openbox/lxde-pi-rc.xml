@@ -243,7 +243,7 @@
       <action name="ToggleShowDesktop"/>
     </keybind>
     <!-- Keybindings for windows -->
-    <keybind key="A-F4">
+    <keybind key="Escape">
       <action name="Close"/>
     </keybind>
     <keybind key="A-Escape">
@@ -667,8 +667,8 @@
   </menu>
   <applications>
     <application name="panel">
-      <skip_taskbar>yes</skip_taskbar>
       <layer>above</layer>
+      <skip_taskbar>yes</skip_taskbar>
     </application>
     <application name="panel" type="dock">
       <layer>below</layer>
@@ -677,6 +677,15 @@
       <maximized>true</maximized>
       <decor>no</decor>
       <iconic>no</iconic>
+    </application>
+	<!-- para hacer terminales ocultas -->
+    <application name="*terminal*">
+      <skip_taskbar>yes</skip_taskbar>
+      <layer>below</layer>
+      <maximized>true</maximized>
+      <decor>no</decor>
+      <iconic>no</iconic>
+      <focus>yes</focus>
     </application>
     <!--
   # this is an example with comments through out. use these to make your

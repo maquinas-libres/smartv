@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.0
 Name=Omxplayer
-Exec=/usr/bin/omxplayer %F
-TryExec=/usr/bin/omxplayer
+Exec=x-terminal-emulator -e "/usr/bin/omxplayer %F"
+TryExec=x-terminal-emulator
 Icon=vlc
 Terminal=false
 Type=Application

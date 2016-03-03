@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+#	video en youtube
+#
+
+[ "$1" == "" ] && exit
+
+x-terminal-emulator -e "omxplayer --timeout 10 -b -o hdmi \"$(youtube-dl -f 18 -g https://www.youtube.com/watch?v=$1)\""
+
+# calidad 22: hd 18: medium

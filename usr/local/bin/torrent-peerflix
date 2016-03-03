@@ -3,21 +3,55 @@
 #	descarga y reproduce torrent
 #
 
+killall peerflix
 
-MENSAJE=$(which notify-send)
+# si existe otro torrent-peerflix se lo cancela
+function mensaje {
+	echo "$*" >> /tmp/info
+}
+
+function torrent-placa {
+	cd /tmp
+	# muestra la portada de la pelicula
+	cp  ~/.cache/imdb/$2.jpg /tmp/bg.jpg
+	feh /tmp/bg.jpg -ZYF -R 3 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "$DESCARGA $(cat /tmp/magnet) &"
+
+	killall mpv
+	killall mplayer
+	killall omxplayer
+	killall omxplayer.bin
+	killall peerflix
+	killall torrent-peerflix
+
+}
+
 PEERFLIX=$(which peerflix)
 DESCARGA=$(which transmission-gtk)
 
-$MENSAJE "Abriendo $1"
+echo > /tmp/info
+
+[ ! "$2" == "" ] && torrent-placa "$1" $2 &
+
 
 B=$1
-[ ! -f "$1" ] && [ "$(echo $1 | grep '^magent')" == "" ] && B=$(torrent-buscar "$1")
+mensaje "$1" > /dev/stderr
+[ ! -f "$1" ] && [ "$(echo $1 | grep '^magent')" == "" ] && B=$(torrent-buscar "$1" "$2")
+mensaje "Buscando Torrent..." > /dev/stderr
 
-$MENSAJE "Url $B"
+
+
+# si no hay que descargar cierra
+[ ! "$B" ] && mensaje "no se encuentra" && exit
+
 
 TITULO=$(echo | $PEERFLIX -l "$B" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
+echo $B > /tmp/magnet
+mensaje "** Torrent encontrado **"
 
-lista () {
+mensaje "Analizando Torrent..." > /dev/stderr
+
+
+function lista () {
 	zenity --title "Lista de archivos" --list --text="Seleciones un o más archivos de descargar" --hide-header --column N --column TITULO --column peso  --hide-column=1 | cut -d"|" -f1
 	# falta agregar el tipo de archivo
 }
@@ -27,6 +61,7 @@ lista () {
 # avi mp4 mkv ogv ogg wmv mov m4v mpg mpeg
 PELICULAS=$(echo "$TITULO"| grep -i "\.\(avi\|mp4\|mkv\|m4v\|og.\|wmv\|mov\|divx\|\)\ " )
 if [ ! "$PELICULAS" == "" ]; then
+
 	CANTIDAD=$(echo "$PELICULAS" | wc -l)
 	# si es una serie elegis, si no busca el unico video y solo baja eso
 	[ "$CANTIDAD" -gt "1" ] && \
@@ -34,25 +69,51 @@ if [ ! "$PELICULAS" == "" ]; then
 		|| N=$(echo "$PELICULAS" | cut -d':' -f1 | sed 's/\ *$//g')
 	# falta la opcion de descargar completo
 	[ "$N" == "TODO" ] && $DESCARGA $B && exit
-	[ "$N" == "" ] && $MENSAJE "ocurrio un error :(" && exit # tal vez enviar un error
+	[ "$N" == "" ] && mensaje "ocurrio un error :(" && exit # tal vez enviar un error
+	mensaje  > /dev/stderr
+	mensaje "Presione \"0\" para descarga" > /dev/stderr
+	mensaje "y ver luego la pelicula" > /dev/stderr
+	mensaje  > /dev/stderr
 
 	# descaga la pelicula
 	PELICULA=$(echo "$PELICULAS" | grep "^$N\ *:")
 	# nombre de la pelicula buscada
 	NOMBRE=$(echo $PELICULA | cut -d: -f2 | sed 's/^\ *//g; s/\ *$//g')
-	$MENSAJE "Descargando $NOMBRE"
 
+	mensaje "Buscando subtitulos"
+	torrent-subtitulos "$NOMBRE" "$IMDB" &
 	# intenta bajar los subtitulos en español
-	SUB="$(torrent-subtitulos "$NOMBRE")"
+	MD5SUB=$(echo "$NOMBRE" | md5sum | cut -d" " -f1)
+	#if [ -f ~/.cache/sub/$MD5SUB ]; then
+	PSUB=" --subtitles ~/.cache/sub/$MD5SUB "
+	SUB=" ~/.cache/sub/$MD5SUB "
 
-	[ ! "$SUB" == "" ] && $MENSAJE "subtitulos $SUB"
-	[ ! "$SUB" == "" ] && PSUB=" --sub=$SUB "
+	[ -x "$(which mpv)" ] && PLAY="-k -- --sub $SUB -fs"
+	[ -x "$(which mplayer)" ] && PLAY="-m -- -sub $SUB -fs"
+	[ -x "$(which omxplayer)" ] && PLAY="-o ----blank --vol 6 --timeout 30 $PSUB --align center"
 
-	# Preguntar si desa descargarla o verla
-	#x-terminal-emulator -T "Descargando $NOMBRE" -e "$PEERFLIX "$B" -i $N -k -- -fs $PSUB "
-	x-terminal-emulator -T "Descargando $NOMBRE" -e "$PEERFLIX "$B" -i $N -o -- $PSUB "
+	# si falla proponer descargarla
+	[ -x "$(which mpv)" ] && PLAY="mpv"
+	[ -x "$(which mplayer)" ] && PLAY="mplayer"
+	[ -x "$(which omxplayer)" ] && PLAY="omxplayer"
+
+	(sleep 15; while [ ! $(pgrep omxplayer) ]; do  mensaje "Esperando más pares..."; sleep 10; done) &
+	#while [ 1 ]; done
+	DATE="$(date +%s)"
+	for R in {1..5}; do
+		#guardar la hora
+		$PEERFLIX "$B" -i $N $PLAY
+		#verifica la hora, si no paso mucho retoma
+		[ "$(($(date +%s)-$DATE))" -gt "80" ] && break
+		mensaje "Ups! la esta Conexión lenta..."
+		sleep 2
+		mensaje "Volviendo a intentar..."
+	done
+	killall feh
+	# preguntar si se quiere descargar si paso poco tiempo y R es mayor a 1
 	exit
 fi
+
 
 # esto deberia ser parte de la lista
 TIPO=$(echo "historietas	cb.
@@ -64,7 +125,7 @@ comprimidos	zip|rar|zx|gzip|7z" | while read T; do
 	echo "$(echo "$TITULO" | grep -i "\.\($E\)\ " | wc -l) - $(echo $T | sed 's/\ .*$//g')"
 done | grep -v "^0" )
 
-$MENSAJE "$TIPO"
+mensaje "$TIPO" &
 
 [ "$N" == "TODO" ] && $DESCARGA $B
 
@@ -76,16 +137,7 @@ exit
 Quehaceres
 ==========
 
+- proponer desgar peliculas que van a tardar mucho
+- agregar tipo de archivo a las listas
 - verificar pares
 - hacer advertencias lindas para cuando se descargan cosas
-
-
-	#$PEERFLIX $1 -r -i $N -k
-	#| while read A; do echo $A; done" # -- -fs
-	# | grep downloaded  | while read A; do
-	 #       echo $A | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" | cut -d ' ' -f3 #| sed 's/MB//'
-		# si verifico esto podria saber si se consiguen pares
-	#done | zenity --text-info
-	#torrent-player $1
-	#x-terminal-emulator -T "Descargando $PELICULA" -e "$PEERFLIX $1 -i $N -r -k" | while read A; do echo $A; done" # -- -fs
-	# verificar pares

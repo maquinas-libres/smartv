@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+#	video en youtube
+#
+
+
+cd $(mktemp -d)
+wget -qO - "https://www.youtube.com/results?q=${1}&sp=CAISAhAB" | grep -o "v=.*title=\"[^&\"']\+" \
+| cut -d "=" -f2,6 | cut -d '"' -f1,3 | sed 's/"/\t/g' \
+| while read A; do
+	ID=$(echo "$A" | sed 's/\t.*//g')
+	echo $ID
+	youtube-dl -f 22 "https://www.youtube.com/watch?v=${ID}" --output video &
+	echo $URL
+	sleep 15
+	/usr/bin/omxplayer $(ls video)
+	# notiticacion con texto
+done
+

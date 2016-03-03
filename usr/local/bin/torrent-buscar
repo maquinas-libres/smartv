@@ -3,28 +3,41 @@
 #	torrent o magnet
 #
 
-# expresiones regulares
-# sin comas y puntos
-# sin año
-# sin acentos
-#
+# generar un nombre|nombre| para diferentes idiomas
+NOMBRE=$(echo $1 | sed 's/[\.,()]//g; s/\ /+/g')
+echo $NOMBRE > /dev/stderr
+# hash
+HASH=$(wget "https://torrentz.eu/feed_any?q=${NOMBRE}+seed%3E3+size+300m+-+1700m" -qO - \
+| grep Hash |  cut -d: -f5 | sed -e 's/<[^>]*>//g;s/\ //g' | head -n1)
+echo $HASH > /dev/stderr
 
-# generar un nombre|nombre|
-echo "s/[\.,()]//g
-s/[\.,]//g; s/(....)//g
-s/[\.,()]//g; y/áéíóú/aeiou/" | while read E; do
-	NOMBRE=$(echo $1 | sed "$E" | sed 's/\ /+/g')
-	HASH=$(wget -t 2 -qO - "https://torrentz.eu/feed_any?q=$NOMBRE+size+300m+-+1g" \
-	| grep Hash | sed -e 's/<[^>]*>//g' | cut -d":" -f5 | sed 's/\ //g'| head -n1)
-	[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}" && break
-done
+# si tiene el imdb
+[ "$HASH" == "" ] &&  HASH=$(wget -t 1 -qO - "https://kat.cr/usearch/seeds%3A3%20imdb%3A${2}/?rss=1&field=seeders&sorder=desc" \
+| gunzip - | grep Hash | sed -e 's/<[^>]*>//g; s/ //g' | head -n1)
 
-# busca descargas directas
+echo $HASH > /dev/stderr
+[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"
+
 
 exit
 
 Quehaceres
 ==========
 
+* agregar otros filtros previos si no levanta nada (nombre)
+* hacer una gran lista ordenada
+  * esta lista tiene magnet peso pares nombre
+  * filtrar por idioma
+  * filtrar por calidad (x264, 1080, 720, bluray, etc)
+  * si no tiene o tiene subtitulo
 * si no encuentran nada en torrent levanta cosas en descarga directa
-* buscar el torrent con calidad (x264, 1080, 720, bluray, etc)
+
+# literal
+# con acentos y sin acentos
+# expresiones regulares
+# sin comas y puntos
+# sin año
+# sin acentos
+#
+
+

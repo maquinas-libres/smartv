@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Navegador web
+Comment[es]=Navegue por la web
+Exec=epiphany-browser %U
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=web-browser
+X-GNOME-Bugzilla-Bugzilla=GNOME
+X-GNOME-Bugzilla-Product=epiphany
+X-GNOME-Bugzilla-Component=BugBuddyBugs
+X-GNOME-Bugzilla-Version=3.8.2
+X-GNOME-UsesNotifications=true
+Categories=Network;GNOME;GTK;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;

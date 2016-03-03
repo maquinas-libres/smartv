@@ -52,60 +52,39 @@ Que tiene
 * **buscador:** torrent-search.sf.net	→ python-libxml2 python-httplib2
 * **streaming:** * peerflix	
 * **descarga:** transmission	→ grabar en videos una vez terminada la descarga
-* **filesharing:** youtube-dl	→ omxplayer -b $(youtube-dl --max-quality 35 -g "$1")
+* **filesharing:** youtube-dl
 * **mensajes:** notify-send	→ se necesita una ventana interior
 
-novedades
----------
-
-* liferea
-* conky | para el clima en pantalla
-
-navegador
----------
-
-* epiphany
-	
 extras
 ------
 
-###textos
+* **navegador:** epiphany
+* **Noticias:** liferea
+* **Clima:** conky
+* **historietas:** comix
+* **pdf:** evince
+* **texto:** openoffice
+* **chat:** pidgin
+* **correo:** geary
+* **privacidad:** tor
 
-* comix
-* evince
-* openoffice
-* calibre?
-
-###Juegos
-
+Juegos
+------
 * juntar por colores (brix, ..)
-* rompecabeza
+* rompecabeza 
 * aventura simple (mario 1 o bubble)
-* tableto (damas, ajedres)
-
-###chat
-
-* pidgin
-
-###mail
-
-* geasy
-
-###privacidad
-
-* tor
-
+* tableto: 
 
 
 Quehaceres
 ----------
 
-* portada tipo información de la pelicula
-* al generar el .desktop buscar el magnet
-* tema para osd
-* ventana cuando descarga
-* placa o imagen para cuando esta descargando
-* generar cache de las busquedas y subtitulos
+* quitar sombra a los subtitulos
+* agregar fondo negro
+* lista negra y blanca
+* generar cache de las busquedas
+* vblog con lista de sitios (host:)
+* mascota
 
 mirar esto:
 

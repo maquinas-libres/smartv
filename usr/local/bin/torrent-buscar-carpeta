@@ -3,7 +3,6 @@
 #	busca novedades y las descarga en una carpeta
 #
 
-AGENT='Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11'
 
 # comprobar si hay red
 # carpeta para el cache
@@ -34,11 +33,11 @@ wget "http://www.imdb.com/search/title?count=100&sort=num_votes,desc&title_type=
 
 	ID=$(echo "$A" | cut -d "	" -f1 | sed 's/[^0-9]//g')
 	echo $ID > /dev/stderr
-	[ -f "$VIDEO/$DIR/$ID.desktop" ] && continue
+	[ -f "${VIDEO}/${DIR}/${ID}.desktop" ] && continue
 	IMG=~/.cache/imdb/$ID.jpg
 	# comprobar si esta en torrentz.eu
 	URL="$(echo "$A" | cut -d "	" -f3)"
-	HD="$(echo "$URL" | sed 's/@.*$/@._V1._UY268_CR43,0,182,268_AL_.jpg/')"
+	HD="$(echo "$URL" | sed 's/@.*$/@._V1._SY256_.jpg/')"
 	if [ ! -f ~/.cache/imdb/$ID.jpg ]; then
 		# descarga en hd si no puede en lw y si no, no genera el link
 		wget -t 1 "$HD" -qO ~/.cache/imdb/$ID.jpg || wget -t 1 "$URL" -qO ~/.cache/imdb/$ID.jpg || continue
@@ -50,10 +49,10 @@ Version=1.0
 Name=$NOMBRE
 Comment=Una pelicula
 TryExec=$PROGRAMA
-Exec=$PROGRAMA \"$NOMBRE\"
+Exec=$PROGRAMA \"$NOMBRE\" \"$ID\"
 Icon=$IMG
 StartupNotify=true
-Type=Application" > $VIDEO/$DIR/$ID.desktop
+Type=Application" > "$VIDEO/$DIR/$ID.desktop"
 
 
 	echo $URL > /dev/stderr

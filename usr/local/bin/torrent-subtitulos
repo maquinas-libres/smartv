@@ -3,46 +3,72 @@
 #	busca subtitulos
 #
 
-elegir {
-	echo "$*" | sort -uR | head -n1 | cut -d'[' -f1 | sed 's/[^0-9]//g'
+NOMBRE="$1"
+IMDB="$2"
+MD5SUB=$(echo "$NOMBRE" | md5sum | cut -d" " -f1)
+ARCHIVO="$HOME/.cache/sub/$MD5SUB"
+
+[ -f "$ARCHIVO" ] && echo $ARCHIVO && exit
+
+function elegir {
+	echo "$*"  | sort -uR | cut -d'[' -f1 | sed 's/[^0-9]//g'
 }
 
+function mensaje {
+	echo "$*" >> /tmp/info
+}
+
+mkdir -p ~/.cache/sub/
 cd $(mktemp -d)
 
-NOMBRE="$*"
+touch "$NOMBRE" &
 
-#nombre del torrent
-BUSQUEDA=$(echo "$NOMBRE" | sed 's/....$//; s/\./ /g; s/\(\(19\|20\)[0-9][0-9]\).*$/\1/g'  | cut -d')' -f1 | cut -d'-' -f1 | sed "s/^ *//g; s/ *$//; s/\ /%20/g")
-
-# ID en imbd
-IMDB=$(lynx https://www.startpage.com/do/m/mobilesearch?q=${BUSQUEDA}%20host%3Aimdb.com -dump -nonumbers | grep "^http://www.imdb.com" | cut -d/ -f5 | sort -u | grep "^tt" | head -n1)
-
-touch "$NOMBRE"
-
-# lista de posibles subtitulos
-LISTA=$(subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb "$NOMBRE" 2> /dev/null | grep -i '^$')
-# eleccion con el nombre mas corto
-IDD=$(elegir "$(echo "$LISTA" | grep $(echo $NOMBRE | sed 's/[^a-zA-Z0-9\.,\-]/./g; s/....$//'))")
-
-[ "$IDD" == "" ] && IDD=$(elegir "$LISTA")
+# ID en imbd (convertir en un programa)
+if [ "$IMDB" == "" ] ; then
+	#nombre del torrent
+	BUSQUEDA=$(echo "$NOMBRE" | sed 's/....$//; s/\./ /g; s/\(\(19\|20\)[0-9][0-9]\).*$/\1/g'  | cut -d')' -f1 | cut -d'-' -f1 | sed "s/^ *//g; s/ *$//; s/\ /%20/g")
+	IMDB=$(lynx https://www.startpage.com/do/m/mobilesearch?q=${BUSQUEDA}%20host%3Aimdb.com -dump -nonumbers | grep "^http://www.imdb.com" | cut -d/ -f5 | sort -u | grep "^tt" | head -n1)
+fi
 
 # descarga el subtitulo
-subdl --lang=spa --imdb-id="$IMDB" --download="$IDD" --force-imdb "$NOMBRE" 2> /dev/null 1> /dev/null
+subdl --lang=spa --imdb-id="$IMDB" --force-imdb "$NOMBRE" 2> /dev/null 1> /dev/null
 
+if [ "$(ls)" == "" ]; then
+	# lista de posibles subtitulos
+	LISTA=$(subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb "$NOMBRE" 2> /dev/null | grep srt | grep -v '^$')
+	# eleccion con el nombre mas corto
+
+	IDD=$(elegir "$(echo "$LISTA" | grep $(echo $NOMBRE | sed 's/[^a-zA-Z0-9\.,\-]/./g; s/....$//') | head -n1)")
+	[ "$IDD" == "" ] && IDD=$(elegir "$LISTA" | head -n1) && mensaje "Subtitulos de calidad baja" \
+	|| mensaje "Subtitulos de calidad media"
+
+
+	# descarga el subtitulo
+	subdl --lang=spa --imdb-id="$IMDB" --download="$IDD" --force-imdb "$NOMBRE" 2> /dev/null 1> /dev/null
+else
+	mensaje "** Subtitulos de calidad alta **"
+
+fi
 rm "$NOMBRE"
 
-rename 's/[^0-9a-zA-Z]//g' * 2> /dev/null
-echo "$(pwd)/$(ls | head -n1)"
+[ "$(ls)" == "" ] && exit
+echo $ARCHIVO
 
-echo $BUSQUEDA > /dev/stderr
-echo $IMDB > /dev/stderr
-echo $IDD > /dev/stderr
+rename 's/[^0-9a-zA-Z]//g' *
+L="$(ls)"
 
+mensaje "Mejorando subtitulos..."
 
-exit
+# codifica todo en UTF8
+recode utf8 $L
+# falta quitar la publicidad
 
-Quehaceres
-==========
+sed -i "s/OpenSubtitles.org/.../g" $L
+sed -i "s/^Apoyanos y convierte/.../g" $L
+sed -i "s/^remover todos los anuncios/.../g" $L
+sed -i "s/^Anuncie su producto o marca aquí/../g" $L
+sed -i "s/http:\/\/......./.../g" $L
 
-* a veces no levanta los subtitulos
-* se puede enviar el nombre de la pelicula desde el .desktop o el ID directamente
+mv "$L" "$ARCHIVO"
+
+mensaje "Subtitulos procesados"

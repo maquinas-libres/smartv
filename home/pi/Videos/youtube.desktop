@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Buscar en Youtube
+Comment=Una pelicula
+TryExec=youtube-buscar-carpeta-gtk
+Exec=youtube-buscar-carpeta-gtk
+Icon=tv-me
+StartupNotify=true
+Type=Application

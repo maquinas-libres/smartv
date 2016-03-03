@@ -30,25 +30,26 @@ documentary	Documental
 drama	Drama
 fantasy	Fantasia
 romance	Romantica
-film-noir	Policial
+film_noir	Policial
 history	Historía
 horror	Horror
 musical	Músical
 mystery	Misterio
-sci-fi	Ciencia Ficción
+sci_fi	Ciencia Ficción
 war	Belica
 western	Oeste
 music	Música
 news	Noticias
-game-show	Espectaculo
+game_show	Espectaculo
 sport	Deportes
 family	Familiar
-talk-show	Entrevistas" | while read G; do
+talk_show	Entrevistas" | while read G; do
 
         DIR="$(echo "$G" | sed 's/^.*\t//g')"
         mkdir -p "$VIDEO/$DIR" 2> /dev/null
         GENERO="$(echo "$G" | sed 's/\t.*$//g')"
 
+	echo $GENERO > /dev/stderr
 
 echo "[Desktop Entry]
 Version=1.0
@@ -64,6 +65,9 @@ Type=Application" > $VIDEO/$DIR/buscar.desktop
 torrent-buscar-carpeta $GENERO "" "$VIDEO/$DIR/"
 
 done
+
+# mejora las imagenes, con menoscolores y sin areas blancas
+mogrify -trim -colors 128 ~/.cache/imdb/*
 
 exit
 
