@@ -13,7 +13,7 @@ mkdir ~/.cache/imdb/ 2> /dev/null
 [ "$1" == "" ] && exit
 BUSQUEDA=$1
 
-VIDEO="/tmp/Busqueda/$BUSQUEDA"
+VIDEO="/tmp/Buscar/$BUSQUEDA"
 
 # genera la carpeta si no existe
 mkdir -p "$VIDEO" 2> /dev/stderr
@@ -23,7 +23,7 @@ PROGRAMA="youtube-play"
 # como se bucan mas
 BUSCAR="youtube-buscar-carpeta"
 
-wget -qO - "https://www.youtube.com/results?q=${BUSQUEDA}&sp=CAISAhAB" | grep -o "v=.*title=\"[^&\"']\+" \
+wget -qO - "https://www.youtube.com/results?q=${BUSQUEDA}" | grep -o "v=.*title=\"[^&\"']\+" \
 | cut -d "=" -f2,6 | cut -d '"' -f1,3 | sed 's/"/\t/g' \
 | while read A; do
 
@@ -36,7 +36,7 @@ wget -qO - "https://www.youtube.com/results?q=${BUSQUEDA}&sp=CAISAhAB" | grep -o
 	if [ ! -f ~/.cache/imdb/$ID.jpg ]; then
 		wget -t 1 "$URL" -qO ~/.cache/imdb/$ID.jpg || continue
 	fi
-	NOMBRE=$(echo "$A" | cut -d "	" -f2 | sed 's/#xed/#xed;/g' | recode html..utf8 | sed 's/[^a-zA-Z0-9¿?¡!\.\,()\ ]//g; s/^\ *//g; s/,$//g;s/^u//')
+	NOMBRE=$(echo "$A" | cut -d "	" -f2 | sed 's/#xed/#xed;/g' | recode html..utf8 | sed 's/[^a-zA-Z0-9¿?¡!\.\,()\ ]//g; s/^\ *//g; s/,$//g;s/^u//' | recode utf8)
 
 echo "[Desktop Entry]
 Version=1.0

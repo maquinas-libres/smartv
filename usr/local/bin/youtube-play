@@ -3,8 +3,24 @@
 #	video en youtube
 #
 
+killall omxplayer &
+killall omxplayer.bin &
+
 [ "$1" == "" ] && exit
+function torrent-placa {
+        cd /tmp
+        # muestra la portada de la pelicula
+        cp  ~/.cache/imdb/$1.jpg /tmp/bg.jpg
+        feh /tmp/bg.jpg -ZYF -R 3 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "Espere por favor..."
 
-x-terminal-emulator -e "omxplayer --timeout 10 -b -o hdmi \"$(youtube-dl -f 18 -g https://www.youtube.com/watch?v=$1)\""
-
+        killall mpv
+        killall mplayer
+        killall omxplayer
+        killall omxplayer.bin
+        killall peerflix
+        killall torrent-peerflix
+}
+torrent-placa $1 &
+x-terminal-emulator -e "/usr/bin/omxplayer --timeout 10 -b -o hdmi \"$(youtube-dl -f 18 -g https://www.youtube.com/watch?v=$1; cp /usr/local/share/negro.jpg /tmp/bg.jpg &)\""
+killall feh
 # calidad 22: hd 18: medium
