@@ -88,24 +88,18 @@ if [ ! "$PELICULAS" == "" ]; then
 	PSUB=" --subtitles ~/.cache/sub/$MD5SUB "
 	SUB=" ~/.cache/sub/$MD5SUB "
 
-	[ -x "$(which mpv)" ] && PLAY="-k -- --sub $SUB -fs"
-	[ -x "$(which mplayer)" ] && PLAY="-m -- -sub $SUB -fs"
-	[ -x "$(which omxplayer)" ] && PLAY="-o ----blank --vol 6 --timeout 30 $PSUB --align center"
+	[ -x "$(which mpv)" ] && PLAY="-k -- --sub $SUB -fs"  && PG="mpv"
+	[ -x "$(which mplayer)" ] && PLAY="-m -- -sub $SUB -fs" && PG="mplayer"
+	[ -x "$(which omxplayer)" ] && PLAY="-o ----blank --vol 6 --timeout 30 $PSUB --align center" && PG="omxplayer"
 
-	# si falla proponer descargarla
-	[ -x "$(which mpv)" ] && PLAY="mpv"
-	[ -x "$(which mplayer)" ] && PLAY="mplayer"
-	[ -x "$(which omxplayer)" ] && PLAY="omxplayer"
-
-	(sleep 15; while [ ! $(pgrep omxplayer) ]; do  mensaje "Esperando más pares..."; sleep 10; done) &
-	#while [ 1 ]; done
+	(sleep 15; while [ ! $(pgrep $PG) ]; do  mensaje "Esperando más pares..."; sleep 15; done) &
+	#guarda la hora
 	DATE="$(date +%s)"
 	for R in {1..5}; do
-		#guardar la hora
 		$PEERFLIX "$B" -i $N $PLAY
 		#verifica la hora, si no paso mucho retoma
 		[ "$(($(date +%s)-$DATE))" -gt "80" ] && break
-		mensaje "Ups! la esta Conexión lenta..."
+		mensaje "Ups! Conexión lenta..."
 		sleep 2
 		mensaje "Volviendo a intentar..."
 	done
