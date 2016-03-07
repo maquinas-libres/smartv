@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Buscar Música
+Comment=Buscador preciso de música
+TryExec=torrent-buscar-gtk
+Exec=torrent-buscar-gtk Musica
+Icon=gmusicbrowser
+StartupNotify=true
+Type=Application

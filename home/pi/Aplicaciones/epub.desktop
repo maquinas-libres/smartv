@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Buscar Libros
+Comment=Buscas libros
+TryExec=torrent-buscar-gtk
+Exec=torrent-buscar-gtk Libro
+Icon=accessories-dictionary
+StartupNotify=true
+Type=Application

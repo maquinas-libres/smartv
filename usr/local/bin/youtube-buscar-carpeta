@@ -6,7 +6,8 @@
 
 # comprobar si hay red
 # carpeta para el cache
-mkdir ~/.cache/imdb/ 2> /dev/null
+DIMDB=/tmp/imdb/
+mkdir $DIMDB 2> /dev/null
 
 # directorio de videos
 [ "$1" == "-h" ] && echo "$0 carpeta"
@@ -30,13 +31,14 @@ wget -qO - "https://www.youtube.com/results?q=${BUSQUEDA}" | grep -o "v=.*title=
 	ID=$(echo "$A" | cut -d "	" -f1)
 	echo $ID > /dev/stderr
 	[ -f "${VIDEO}/${DIR}/${ID}.desktop" ] && continue
-	IMG=~/.cache/imdb/$ID.jpg
+	IMG=$DIMDB/$ID.jpg
 	# descarga la miniatura
 	URL="$(youtube-dl "https://www.youtube.com/watch?v=${ID}" --get-thumbnail)"
-	if [ ! -f ~/.cache/imdb/$ID.jpg ]; then
-		wget -t 1 "$URL" -qO ~/.cache/imdb/$ID.jpg || continue
+	if [ ! -f $DIMDB/$ID.jpg ]; then
+		wget -t 1 "$URL" -qO $DIMDB/$ID.jpg || continue
 	fi
-	NOMBRE=$(echo "$A" | cut -d "	" -f2 | sed 's/#xed/#xed;/g' | recode html..utf8 | sed 's/[^a-zA-Z0-9¿?¡!\.\,()\ ]//g; s/^\ *//g; s/,$//g;s/^u//' | recode utf8)
+	NOMBRE=$(echo "$A" | cut -d "	" -f2 )
+#| sed 's/#xed/#xed;/g' | recode html..utf8 | sed 's/[^a-zA-Z0-9¿?¡!\.\,()\ ]//g; s/^\ *//g; s/,$//g;s/^u//' | recode utf8
 
 echo "[Desktop Entry]
 Version=1.0

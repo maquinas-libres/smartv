@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+#	clon de torrent-search
+#
+
+TIPO=$1
+TITULO=$2
+
+if [ ! "$TIPO" == "" ]; then
+	TITULO=$(zenity --entry  --text="¿Que estas buscando?"  --entry-text=Buscar)
+else
+	if [ "$TITULO" == "" ]; then
+		RESP=$(zenity --forms  --text="¿Que estas buscando?"  \
+		--add-entry=Buscar \
+		--add-list="Tipo" --list-values="Comic|Libro|Peliculas|Música" \
+		| sed 's/[^a-zA-Z0-9\ \.,¡!¿?\|]//g')
+		[ "$RESP" == "|" ] || [ "$RESP" == "" ] && exit
+		TITULO=$(echo $RESP | cut -d"|" -f1)
+		TIPO=$(echo $RESP | cut -d"|" -f2)
+	fi
+fi
+
+
+torrentz-dl "$TITULO" "$TIPO" | sed 's/\t/\n/g' \
+| zenity --list --column Hash --column Pares --column Peso --column Nombre --multiple --hide-column=1 --text="Selecione uno o mas elementos de la lista para descargar" --ok-label="Descargar"
+# ver que hacer con los magnet
+# preguntar si descargar o ver si tiene muchos pares

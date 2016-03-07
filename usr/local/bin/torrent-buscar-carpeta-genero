@@ -17,6 +17,9 @@ BUSCAR="torrent-buscar-carpeta"
 # &languages=es
 # https://github.com/tarzasai/.flexget/blob/master/config.yml
 
+# series o peliculas
+echo ""
+
 
 #genero
 echo "action	Acción
@@ -25,25 +28,21 @@ animation	Animación
 biography	Biografía
 comedy	Comedía
 thriller	Triler
-crime	Crimen
 documentary	Documental
 drama	Drama
 fantasy	Fantasia
 romance	Romantica
 film_noir	Policial
 history	Historía
-horror	Horror
+Terror	Horror
 musical	Músical
 mystery	Misterio
 sci_fi	Ciencia Ficción
 war	Belica
 western	Oeste
 music	Música
-news	Noticias
 game_show	Espectaculo
-sport	Deportes
-family	Familiar
-talk_show	Entrevistas" | while read G; do
+sport	Deporte" | sort -R| while read G; do
 
         DIR="$(echo "$G" | sed 's/^.*\t//g')"
         mkdir -p "$VIDEO/$DIR" 2> /dev/null
@@ -57,7 +56,7 @@ Name=. Buscar
 Comment=Buscar más peliculas
 TryExec=$PROGRAMA
 Exec=$PROGRAMA $GENERO
-Icon=gtk-find
+Icon=parole
 StartupNotify=true
 Type=Application" > $VIDEO/$DIR/buscar.desktop
 
@@ -66,8 +65,24 @@ torrent-buscar-carpeta $GENERO "" "$VIDEO/$DIR/"
 
 done
 
+torrent-buscar-carpeta "" "" "$VIDEO/Argentinas/" "ar"
+torrent-buscar-carpeta "" "" "$VIDEO/Mexicanas/" "mx"
+
+echo "[Desktop Entry]
+Version=1.0
+Name=. Buscar
+Comment=Buscar más peliculas
+TryExec=$PROGRAMA
+Exec=$PROGRAMA "+"
+Icon=parole
+StartupNotify=true
+Type=Application" > $VIDEO/buscar.desktop
+
+# elimina errores
+find ~/.cache/imdb/ -type f -empty -exec rm {} \;
 # mejora las imagenes, con menoscolores y sin areas blancas
 mogrify -trim -colors 128 ~/.cache/imdb/*
+# falta el tamaño, mirar cual es el optimo (720 del alto?!)
 
 exit
 
@@ -75,6 +90,3 @@ Quehaceres
 ==========
 
 * comprobar si hay red
-
-
-

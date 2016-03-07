@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Buscar de todo
+Comment=Busca cualquier cosa
+TryExec=torrent-buscar-gtk
+Exec=torrent-buscar-gtk
+Icon=zenmap
+StartupNotify=true
+Type=Application

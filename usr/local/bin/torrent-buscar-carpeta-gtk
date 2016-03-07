@@ -2,7 +2,18 @@
 #
 #	busca peliculas por nombre
 #
-TITULO=$(zenity --entry --entry-text=buscar --text="¿Que pelicula queres ver?" | sed 's/[^a-zA-Z0-9\ \.,¡!¿?]//g')
+TITULO=$(zenity --entry --entry-text=buscar --text="¿Que pelicula queres ver?" | sed 's/,\|\./ /g; s/[^a-zA-Z0-9\ \-]//g')
+[ "$TITULO" == "" ] && exit
 TEMP="/tmp/Buscar/$TITULO"
 mkdir -p "$TEMP" 2> /dev/null
-[ ! "$TITULO" == "" ] && xdg-open "$TEMP" && torrent-buscar-carpeta " " "$TITULO" "$TEMP"
+
+echo "[Desktop Entry]
+Version=1.0
+Name=Buscando...
+Comment=Espere por favor
+Icon=gnome-do
+StartupNotify=true
+Type=Application" > "$TEMP/espera.desktop"
+
+xdg-open "$TEMP" && torrent-buscar-carpeta " " "$TITULO" "$TEMP"
+rm "$TEMP/ZZZespera.desktop"

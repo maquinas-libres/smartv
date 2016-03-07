@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+#	la idea es que busque en torrentz.eu y entrege:
+#	pares peso nombres hash
+#
+
+[ "$2" == "peerflix" ] && MODO="seed%3E3+size+300m+-+1700m"
+[ "$2" == "Peliculas" ] && MODO="movie*"
+[ "$2" == "Libro" ] && MODO="book*"
+[ "$2" == "Comix" ] && MODO="comic*"
+[ "$2" == "Musica" ] && MODO="music*"
+
+echo $(wget "https://torrentz.eu/feed_any?q=${1}+${MODO}" -qO -) \
+| sed 's/<item>/\n/g' | grep "</item>" | while read A; do
+	L=$(echo $A | sed 's/</\n</g')
+	TITULO=$(echo "$L" | grep title | head -n1 | sed -e 's/<[^>]*>//g' )
+	HASH=$(echo "$L" | grep link | head -n1 | sed -e 's/<[^>]*>//g' | cut -d/ -f4)
+	X=$(echo "$L" | grep descrip | head -n1 | sed -e 's/<[^>]*>//g')
+	# peso, pares y hash
+	PESO=$(echo "$X" | cut -d: -f2 | sed 's/[^0-9]//g')
+	PARES=$(echo "$X" | cut -d: -f3 | sed 's/[^0-9]//g')
+	echo "$HASH	$PARES	$(($PESO*1000))	$TITULO"
+done

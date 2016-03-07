@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Ayuda
+Comment=Ayuda del centro de medios
+TryExec=ayuda
+Exec=ayuda
+Icon=ibus
+StartupNotify=true
+Type=Application

@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+#	busca y descarga video de una pagina o blog
+#	bazza © liberado bajo licencia AGPLv3+
+#	requiere: youtube-dl, lynx, wget
+#	optativo: mlnet
+
+# sitios a usar
+#BUSCAR="https://www.startpage.com/do/m/mobilesearch?q=ver+peliculas+online"
+#lynx "$BUSCAR" -listonly -dump -nonumbers -hiddenlinks=ignore \
+#| grep  ^http:.*${HOST}
+
+
+#HOST="repelis.tv"
+HOST="gnula.nu"
+#HOST="pelis24.com"
+
+BUSCAR="https://www.startpage.com/do/m/mobilesearch?q=${1}%20host%3A${HOST}"
+#BUSCAR="https://www.startpage.com/do/m/mobilesearch?q=${1}%20ver%20online"
+PESO=150
+
+
+lynx "$BUSCAR" -listonly -dump -nonumbers -hiddenlinks=ignore \
+| grep -v startpage \
+| grep "/.*/.*/.*/" \
+| sort -uR \
+| head -n 5 \
+| while read L; do
+	HOST="$(echo $L | cut -d"/" -f1-3)"
+	echo $HOST $L
+	wget -qO - $L \
+	| grep iframe \
+	| grep -v comment \
+	| grep -o "https\?://[^\"'\\\)]\+" \
+	| grep -v "\.\(js\|jpg\|png\|css\)\(?.*\|\)$" \
+	| grep -v "${HOST}" \
+	| grep "/.*/.*/.*/"\
+	| grep -iv \.org \
+	| grep -iv facebook \
+	| grep -iv twitter \
+	| grep -iv plugin \
+	| grep -iv google \
+	| grep -iv "/ads" \
+	| grep -iv direct \
+	| grep -iv adserver \
+	| grep -iv adserving \
+	| grep -iv banner | while read J; do
+		echo "	$J"
+		wget -qO - "$J" \
+		| grep -o "https\?://[^\"'\\\)]\+" \
+		| grep \.mp4 || youtube-dl "$J" -q -g --min-filesize ${PESO}m 2> /dev/null
+	done
+done
+
+#		
+
+
+exit
+
+Quehaceres
+==========
+
+* probar
+
+
+		#for F in webm mp4; do
+		#	# si es video gugle
+		#	[ ! "$(echo $U | grep google)" == "" ] && gugle "$U" $F && termine
+		#	# busca la URL
+		#	URL=$(wget -Q 1K -qO - "$U" | grep -o "https\?://[^\"'\\\)]\+$F" \
+		#	| sed 's/http/\nhttp/g' | grep mp4$ | sort -u | head -n1)
+		#	[ ! "$URL" == "" ] && echo "$URL"
+		#done
+
+
+function nombre {
+	dos2unix \
+	| grep -i "<title>" | cut -d">" -f2 | cut -d"<" -f1 \
+	| tr "[:upper:]" "[:lower:]" \
+	| sed 's/\ vk//g; s/peliculas\?\ completas\?//g; s/peliculas\?//g; s/completa//g; s/latino//g; s/ver\ online//g; s/online//g;' \
+	| sed 's/:/ - /g; s/[^\ a-zA-Z_-.0-9]//g; s/ \+/ /g; s/^ *//g; s/ *$//g; s/\.\././g'
+}
+
+function gugle {
+	# basado en: https://github.com/hnatt/grab-gdrive-vid/blob/master/grab-gdrive-videos
+	page=$(wget "$1" -Q 10K -qO -)
+	title=$(echo $page | nombre)
+	echo "$page" \
+	| sed 's/https/\nhttps/g' \
+	| grep -o "https.*\(mp4\|webm\).*\(low\|medium\|hd\)" \
+	| grep medium \
+	| grep $2 \
+	| while read U; do
+		wget "$(echo $U | sed 's % \\\\x g' | xargs printf)" -cO "$title.$2" && exit
+	done
+	exit 1
+}
+
+

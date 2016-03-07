@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Buscar Peliculas (Avanzado)
+Comment=Buscador preciso de peliculas
+TryExec=torrent-buscar-gtk
+Exec=torrent-buscar-gtk "Peliculas"
+Icon=pitivi
+StartupNotify=true
+Type=Application

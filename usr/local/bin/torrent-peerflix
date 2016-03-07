@@ -2,8 +2,10 @@
 #
 #	descarga y reproduce torrent
 #
+[ "$(ps ax | grep feh | wc -l)" -gt "1" ] && exit
 
 killall peerflix
+killall feh
 
 # si existe otro torrent-peerflix se lo cancela
 function mensaje {
@@ -14,7 +16,7 @@ function torrent-placa {
 	cd /tmp
 	# muestra la portada de la pelicula
 	cp  ~/.cache/imdb/$2.jpg /tmp/bg.jpg
-	feh /tmp/bg.jpg -ZYF -R 3 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "$DESCARGA $(cat /tmp/magnet) &"
+	feh /tmp/bg.jpg -qZYFR 1 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "transmission-gtk $(cat /tmp/magnet) &; killall feh"
 
 	killall mpv
 	killall mplayer
@@ -35,13 +37,12 @@ echo > /tmp/info
 
 B=$1
 mensaje "$1" > /dev/stderr
-[ ! -f "$1" ] && [ "$(echo $1 | grep '^magent')" == "" ] && B=$(torrent-buscar "$1" "$2")
+mensaje
 mensaje "Buscando Torrent..." > /dev/stderr
-
-
+[ ! -f "$1" ] && [ "$(echo $1 | grep '^magent')" == "" ] && B=$(torrent-buscar "$1" "$2")
 
 # si no hay que descargar cierra
-[ ! "$B" ] && mensaje "no se encuentra" && exit
+[ ! "$B" == "" ] && mensaje "No disponible en este momento" && exit
 
 
 TITULO=$(echo | $PEERFLIX -l "$B" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
@@ -70,27 +71,29 @@ if [ ! "$PELICULAS" == "" ]; then
 	# falta la opcion de descargar completo
 	[ "$N" == "TODO" ] && $DESCARGA $B && exit
 	[ "$N" == "" ] && mensaje "ocurrio un error :(" && exit # tal vez enviar un error
-	mensaje  > /dev/stderr
-	mensaje "Presione \"0\" para descarga" > /dev/stderr
-	mensaje "y ver luego la pelicula" > /dev/stderr
-	mensaje  > /dev/stderr
+	mensaje
 
 	# descaga la pelicula
 	PELICULA=$(echo "$PELICULAS" | grep "^$N\ *:")
 	# nombre de la pelicula buscada
 	NOMBRE=$(echo $PELICULA | cut -d: -f2 | sed 's/^\ *//g; s/\ *$//g')
 
-	mensaje "Buscando subtitulos"
-	torrent-subtitulos "$NOMBRE" "$IMDB" &
-	# intenta bajar los subtitulos en español
 	MD5SUB=$(echo "$NOMBRE" | md5sum | cut -d" " -f1)
+	[ "$(head ~/.cache/sub/$MD5SUB)" == "" ] && torrent-subtitulos "$NOMBRE" "$2" &
+	# intenta bajar los subtitulos en español
 	#if [ -f ~/.cache/sub/$MD5SUB ]; then
 	PSUB=" --subtitles ~/.cache/sub/$MD5SUB "
 	SUB=" ~/.cache/sub/$MD5SUB "
 
+	[ -x "$(which mplayer)" ] && PLAY="-m -- -utf8 -sub $SUB -fs" && PG="mplayer"
 	[ -x "$(which mpv)" ] && PLAY="-k -- --sub $SUB -fs"  && PG="mpv"
-	[ -x "$(which mplayer)" ] && PLAY="-m -- -sub $SUB -fs" && PG="mplayer"
-	[ -x "$(which omxplayer)" ] && PLAY="-o ----blank --vol 6 --timeout 30 $PSUB --align center" && PG="omxplayer"
+	[ -x "$(which omxplayer)" ] && PLAY="-o -- --align center --vol 6 --timeout 30 $PSUB " && PG="omxplayer"
+
+	sleep 4
+	mensaje
+	mensaje "Presione \"0\" para descarga"
+	mensaje "y ver después..."
+	mensaje
 
 	(sleep 15; while [ ! $(pgrep $PG) ]; do  mensaje "Esperando más pares..."; sleep 15; done) &
 	#guarda la hora
@@ -98,7 +101,7 @@ if [ ! "$PELICULAS" == "" ]; then
 	for R in {1..5}; do
 		$PEERFLIX "$B" -i $N $PLAY
 		#verifica la hora, si no paso mucho retoma
-		[ "$(($(date +%s)-$DATE))" -gt "80" ] && break
+		[ "$(($(date +%s)-$DATE))" -gt "120" ] && break
 		mensaje "Ups! Conexión lenta..."
 		sleep 2
 		mensaje "Volviendo a intentar..."

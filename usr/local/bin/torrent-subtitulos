@@ -20,17 +20,14 @@ function mensaje {
 	echo "$*" >> /tmp/info
 }
 
+mensaje "Buscando subtitulos $IMDB"
 mkdir -p ~/.cache/sub/
 cd $(mktemp -d)
 
 touch "$NOMBRE" &
 
-# ID en imbd (convertir en un programa)
-if [ "$IMDB" == "" ] ; then
-	#nombre del torrent
-	BUSQUEDA=$(echo "$NOMBRE" | sed 's/....$//; s/\./ /g; s/\(\(19\|20\)[0-9][0-9]\).*$/\1/g'  | cut -d')' -f1 | cut -d'-' -f1 | sed "s/^ *//g; s/ *$//; s/\ /%20/g")
-	IMDB=$(lynx https://www.startpage.com/do/m/mobilesearch?q=${BUSQUEDA}%20host%3Aimdb.com -dump -nonumbers | grep "^http://www.imdb.com" | cut -d/ -f5 | sort -u | grep "^tt" | head -n1 | sed 's/[^0-9]//g')
-fi
+# busca el imdb si no lo tiene
+[ "$IMDB" == "" ] && IMDB=(torrent-imdb "$NOMBRE")
 
 # descarga el subtitulo
 #subdl --lang=spa "$NOMBRE" || subdl --lang=spa --imdb-id="$IMDB" --force-imdb "$NOMBRE" 2> /dev/null 1> /dev/null
@@ -45,7 +42,7 @@ NOMBRELIMPIO=$(echo $NOMBRE | sed 's/[^a-zA-Z0-9\ ]//g; s/....$//')
 [ "$IDD" == "" ] && IDD=$(elegir "$LISTA")
 
 # descarga el subtitulo
-subdl --lang=spa --imdb-id="$IMDB" --download="$IDD" --force-imdb "$NOMBRE" 2> /dev/null 1> /dev/null
+subdl --lang=spa --imdb-id=$IMDB --download="$IDD" --force-imdb "$NOMBRE" 2> /dev/null 1> /dev/null
 
 rm "$NOMBRE"
 
@@ -55,13 +52,16 @@ echo $ARCHIVO
 rename 's/[^0-9a-zA-Z]//g' *
 L="$(ls)"
 
+mensaje "$LISTA"	#debug
 #mensaje "Subtitulo $L"	#debug
-#mensaje "Pelicula $NOMBRE"	#debug
+mensaje "Pelicula $NOMBRE"	#debug
 
-mensaje "Mejorando subtitulos..."
+#mensaje "Mejorando subtitulos..."
+mensaje "Codigo $(enca -L none $L)"
 
-# codifica todo en UTF8
-cat $L | grep á || recode latin1..utf8 $L
+# codifica todo en UTF8 - falta detectar el formato original
+[ "$(cat $L | grep é)" == "" ] && enca -L none -x UTF8 $L # probar si esto funciona
+# recode latin1..utf8
 
 
 # quitar la publicidad
@@ -74,7 +74,7 @@ sed -i "/OpenSubtitles\.org/d; \
 s/#\(\ \|$\)/♪\1/g; s/#.$/♫/g; \
 /AllSubs.org/d;" $L
 
-mensaje "Subtitulos completos"
+mensaje "Subtitulos encontrados"
 
 mv "$L" "$ARCHIVO"
 

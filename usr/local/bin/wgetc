@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+#	wget con cache
+#
+
+CACHE=/tmp/$(md5sum "$1" | cut -d" " -f1)
+"$(head -n1 $CACHE)" == "" && wget -qO $CACHE $1
+cat $CACHE

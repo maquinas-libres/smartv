@@ -1,43 +1,43 @@
 #!/bin/bash
 #
 #	torrent o magnet
-#
+#	$1: nombre	$2: imdb
+
+
 
 # generar un nombre|nombre| para diferentes idiomas
-NOMBRE=$(echo $1 | sed 's/[\.,()]//g; s/\ /+/g')
+NOMBRE=$(echo $1 | sed 's/,\|\./ /g; s/[^a-zA-Z0-9\ -]//g; s/\ /+/g')
 echo $NOMBRE > /dev/stderr
-# hash
-HASH=$(wget "https://torrentz.eu/feed_any?q=${NOMBRE}+seed%3E3+size+300m+-+1700m" -qO - \
-| grep Hash |  cut -d: -f5 | sed -e 's/<[^>]*>//g;s/\ //g' | head -n1)
-echo $HASH > /dev/stderr
+[ -f "/tmp/$NOMBRE" ]&& cat /tmp/$NOMBRE && exit
 
-# si tiene el imdb
-[ "$HASH" == "" ] &&  HASH=$(wget -t 1 -qO - "https://kat.cr/usearch/seeds%3A3%20imdb%3A${2}/?rss=1&field=seeders&sorder=desc" \
-| gunzip - | grep Hash | sed -e 's/<[^>]*>//g; s/ //g' | head -n1)
+[ "$2" == "" ] && IMDB=$(torrent-imdb "$NOMBRE") || IMDB=$2
 
-echo $HASH > /dev/stderr
-[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"
+#	falta:
+#	tambien buscar sin años y sin acentos
 
+# busca en torrentz y kickass
+BUSQUEDA=$(torrentz-dl "$NOMBRE" peerflix; [ ! "$IMDB" == "" ] && kickass-dl $IMDB)
+[ "$BUSQUEDA" == "" ] && exit # tal vez pueda reducir el nombre
+
+# busquedas mas filtros
+NEGRA=$(cat ~/.negra)
+BLANCA=$(cat ~/.blanca)
+HASH=$(echo "BUSQUEDA" | grep -vi $NEGRA | grep -i $BLANCA | head -n1 | cut -d"	" -f1)
+
+# busca solo filtrando la lista negra
+[ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -vi $NEGRA | head -n1 | cut -d"	" -f1)
+
+# devuelve el hash y guarda el cache
+[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE
 
 exit
 
 Quehaceres
 ==========
 
-* agregar otros filtros previos si no levanta nada (nombre)
-* hacer una gran lista ordenada
-  * esta lista tiene magnet peso pares nombre
-  * filtrar por idioma
+* hacer una gran lista ordenada (X)
   * filtrar por calidad (x264, 1080, 720, bluray, etc)
   * si no tiene o tiene subtitulo
 * si no encuentran nada en torrent levanta cosas en descarga directa
-
-# literal
-# con acentos y sin acentos
-# expresiones regulares
-# sin comas y puntos
-# sin año
-# sin acentos
-#
 
 

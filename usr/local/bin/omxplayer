@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cp /usr/local/share/negro.jpg /tmp/bg.jpg &
+(while [ 1 ]; do cp /usr/local/share/pixmaps/negro.png /tmp/bg.jpg; sleep 1; cp /usr/local/share/pixmaps/carga.png /tmp/bg.jpg; sleep 1; done)&
 echo > /tmp/info
-x-terminal-emulator -e "/usr/bin/omxplayer $*"
+x-terminal-emulator -e "/usr/bin/omxplayer $(echo "$*"; kill %1 echo > /tmp/info)" 2> /dev/null

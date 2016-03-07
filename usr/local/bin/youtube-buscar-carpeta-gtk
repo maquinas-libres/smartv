@@ -5,4 +5,17 @@
 TITULO=$(zenity --entry --entry-text=buscar --text="¿Que video queres ver?" | sed 's/[^a-zA-Z0-9\ \.,¡!¿?]//g')
 TEMP="/tmp/Buscar/$TITULO"
 mkdir -p "$TEMP" 2> /dev/null
+
+echo "[Desktop Entry]
+Version=1.0
+Name=Buscando...
+Comment=Espere por favor
+Icon=gnome-do
+StartupNotify=true
+Type=Application" > "$TEMP/espera.desktop"
+
 [ ! "$TITULO" == "" ] && xdg-open "$TEMP" && youtube-buscar-carpeta "$TITULO" "$TEMP"
+
+rm "$TEMP/espera.desktop"
+
+
