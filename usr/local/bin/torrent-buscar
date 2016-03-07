@@ -8,7 +8,7 @@
 # generar un nombre|nombre| para diferentes idiomas
 NOMBRE=$(echo $1 | sed 's/,\|\./ /g; s/[^a-zA-Z0-9\ -]//g; s/\ /+/g')
 echo $NOMBRE > /dev/stderr
-[ -f "/tmp/$NOMBRE" ]&& cat /tmp/$NOMBRE && exit
+[ ! "$(head /tmp/$NOMBRE)" == "" ]&& cat /tmp/$NOMBRE && exit
 
 [ "$2" == "" ] && IMDB=$(torrent-imdb "$NOMBRE") || IMDB=$2
 

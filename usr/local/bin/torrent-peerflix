@@ -42,7 +42,7 @@ mensaje "Buscando Torrent..." > /dev/stderr
 [ ! -f "$1" ] && [ "$(echo $1 | grep '^magent')" == "" ] && B=$(torrent-buscar "$1" "$2")
 
 # si no hay que descargar cierra
-[ ! "$B" == "" ] && mensaje "No disponible en este momento" && exit
+[ "$B" == "" ] && mensaje "No disponible en este momento" && exit
 
 
 TITULO=$(echo | $PEERFLIX -l "$B" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")

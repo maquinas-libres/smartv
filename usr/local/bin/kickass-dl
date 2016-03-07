@@ -5,7 +5,7 @@
 #
 
 
-echo $(wget "https://kat.cr/usearch/seeds%3A3%20imdb%3A${1}/?rss=1&field=seeders&sorder=desc%22" -qO - | gunzip -) \
+echo $(wget "https://kat.cr/usearch/seeds%3A3%20imdb%3A${1}/?rss=1&field=seeders&sorder=desc%22" -qO - | gunzip ) \
 | sed 's/<item>/\n/g' | grep "</item>" | while read A; do
 	L=$(echo $A | sed 's/</\n</g')
 	TITULO=$(echo "$L" | grep title | head -n1 | sed -e 's/<[^>]*>//g')
