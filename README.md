@@ -10,6 +10,8 @@ Como usarlo
 
 ![elegi](img/elegi.png)
 
+![mira](img/presentacion.png)
+
 ![mira](img/mira.png)
 
 Novedades
@@ -66,7 +68,7 @@ extras
 * **Clima:** conky
 * **historietas:** comix
 * **pdf:** evince
-* **texto:** openoffice
+* **texto:** openoffice fbreader
 * **chat:** pidgin
 * **correo:** geary
 * **privacidad:** tor
@@ -82,6 +84,8 @@ Juegos
 Quehaceres
 ----------
 
+* musica: rolling stone host:www.allmusic.com/artist
+http://www.allmusic.com/artist/the-rolling-stones-mn0000894465/discography
 * quitar sombra a los subtitulos
 * lista negra y blanca
 * generar cache de las busquedas
@@ -92,3 +96,4 @@ mirar esto:
 
 * https://github.com/Ivshti/stremio-addons-client
 * https://www.npmjs.com/package/multipass-torrent
+
