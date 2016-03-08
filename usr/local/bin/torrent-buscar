@@ -15,20 +15,43 @@ echo $NOMBRE > /dev/stderr
 #	falta:
 #	tambien buscar sin años y sin acentos
 
-# busca en torrentz y kickass
-BUSQUEDA=$(torrentz-dl "$NOMBRE" peerflix; [ ! "$IMDB" == "" ] && kickass-dl $IMDB)
+# busca los subtitulos posibles para buscar los videos en torrentz
+# esta lista puede ser guardada para subtitulos alternativos
+touch /tmp/pepe 2> /dev/null
+subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb /tmp/pepe \
+| cut -d '"' -f3 | grep \.srt | sed 's/\ *$//g; s/^\ //g; s/\....$//g;  s/\....//g' \
+| while read SNOMBRE; do
+	echo "probando con $SNOMBRE" >> /tmp/info
+	# busca el nombre basado en los subtitulos
+	BUSQUEDA=$(torrentz-dl "$SNOMBRE" peerflix)
+	[ ! "$BUSQUEDA" == "" ] && echo "este"  >> /tmp/info  && break
+done
+# falta que tenga la mayor cantidad de pares
+
+# busqueda normal y kickass por imdb
+[ "$BUSQUEDA" == "" ] && BUSQUEDA=$(torrentz-dl "$NOMBRE" peerflix; [ ! "$IMDB" == "" ] && kickass-dl $IMDB)
+
+# sin el año
+[ "$BUSQUEDA" == "" ] && BUSQUEDA=$(torrentz-dl $(echo "$NOMBRE" | sed 's/....$//') peerflix)
 [ "$BUSQUEDA" == "" ] && exit # tal vez pueda reducir el nombre
 
+
 # busquedas mas filtros
+# esto moverlo a .torrent-buscar/ o algo asi
 NEGRA=$(cat ~/.negra)
 BLANCA=$(cat ~/.blanca)
-HASH=$(echo "BUSQUEDA" | grep -vi $NEGRA | grep -i $BLANCA | head -n1 | cut -d"	" -f1)
+HASH=$(echo "BUSQUEDA" | grep -vi "$NEGRA" | grep -i "$BLANCA" | head -n1 | cut -d"	" -f1)
 
 # busca solo filtrando la lista negra
-[ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -vi $NEGRA | head -n1 | cut -d"	" -f1)
+[ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -vi "$NEGRA" | head -n1 | cut -d"	" -f1)
+
 
 # devuelve el hash y guarda el cache
 [ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE
+
+echo "Pares: $(echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2)" >> /tmp/info
+
+
 
 exit
 
@@ -36,8 +59,7 @@ Quehaceres
 ==========
 
 * hacer una gran lista ordenada (X)
-  * filtrar por calidad (x264, 1080, 720, bluray, etc)
-  * si no tiene o tiene subtitulo
+  * si no tiene o tiene subtitulo (X)
 * si no encuentran nada en torrent levanta cosas en descarga directa
 
 
