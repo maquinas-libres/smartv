@@ -7,6 +7,7 @@
 killall peerflix
 killall feh
 
+mkdir /tmp/bg/
 # si existe otro torrent-peerflix se lo cancela
 function mensaje {
 	echo "$*" >> /tmp/info
@@ -15,9 +16,9 @@ function mensaje {
 function torrent-placa {
 	cd /tmp
 	# muestra la portada de la pelicula
-	cp  ~/.cache/imdb/$2.jpg /tmp/bg.jpg
-	feh /tmp/bg.jpg -qZYFR 1 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "transmission-gtk $(cat /tmp/magnet) &; killall feh"
-
+	rm /tmp/bg/* 2> /null
+	ln  ~/.cache/imdb/$2.jpg /tmp/bg/ || ln /usr/local/share/pixmaps/torrent-peerflix/* /tmp/bg/
+	feh /tmp/bg -qZF -D1 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "transmission-gtk $(cat /tmp/magnet) &; killall feh"
 	killall mpv
 	killall mplayer
 	killall omxplayer
@@ -27,19 +28,26 @@ function torrent-placa {
 
 }
 
+# espacio en el disco
+#
+#
+
 PEERFLIX=$(which peerflix)
 DESCARGA=$(which transmission-gtk)
 
 echo > /tmp/info
 
-[ ! "$2" == "" ] && torrent-placa "$1" $2 &
+#[ $(df -H | grep /$ | expand | tr -s " " | cut -d " " -f5 | cut -d "%" -f1) -ge 85 ] && rm -r /tmp/torrent-stream/ &&  mensaje "¡¡disco lleno!!"
+
+torrent-placa "$1" $2 &
 
 
 B=$1
-mensaje "$1" > /dev/stderr
+mensaje "$1"
 mensaje
 mensaje "Buscando Torrent..." > /dev/stderr
-[ ! -f "$1" ] && [ "$(echo $1 | grep '^magent')" == "" ] && B=$(torrent-buscar "$1" "$2")
+#[ ! -f "$B" ] || 
+[ "$(echo $B | grep '^magnet')" == "" ] && B=$(torrent-buscar "$1" "$2")
 
 # si no hay que descargar cierra
 [ "$B" == "" ] && mensaje "No disponible en este momento" && exit
@@ -47,7 +55,7 @@ mensaje "Buscando Torrent..." > /dev/stderr
 
 TITULO=$(echo | $PEERFLIX -l "$B" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
 echo $B > /tmp/magnet
-mensaje "** Torrent encontrado **"
+mensaje "¡Torrent encontrado!"
 
 mensaje "Analizando Torrent..." > /dev/stderr
 
@@ -60,7 +68,7 @@ function lista () {
 
 # peliculas
 # avi mp4 mkv ogv ogg wmv mov m4v mpg mpeg
-PELICULAS=$(echo "$TITULO"| grep -i "\.\(avi\|mp4\|mkv\|m4v\|og.\|wmv\|mov\|divx\|\)\ " )
+PELICULAS=$(echo "$TITULO"| grep -i "\.\(avi\|mp4\|mkv\|m4v\|og.\|wmv\|mov\|divx\|vob\)\ " | grep -iv "sample\...." )
 if [ ! "$PELICULAS" == "" ]; then
 
 	CANTIDAD=$(echo "$PELICULAS" | wc -l)
@@ -94,12 +102,12 @@ if [ ! "$PELICULAS" == "" ]; then
 	mensaje "Presione \"0\" para descarga"
 	mensaje "y ver después..."
 	mensaje
-
+	touch ~/.cache/sub/$MD5SUB
 	(sleep 15; while [ ! $(pgrep $PG) ]; do  mensaje "Esperando más pares..."; sleep 15; done) &
 	#guarda la hora
 	DATE="$(date +%s)"
 	for R in {1..5}; do
-		$PEERFLIX "$B" -i $N $PLAY
+		$PEERFLIX "$B" -i $N $PLAY #&& killall feh
 		#verifica la hora, si no paso mucho retoma
 		[ "$(($(date +%s)-$DATE))" -gt "120" ] && break
 		mensaje "Ups! Conexión lenta..."
