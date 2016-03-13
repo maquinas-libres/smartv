@@ -40,7 +40,7 @@ Instalar en GNU
 wget -O - https://raw.githubusercontent.com/maquinas-libres/smartv/master/instalar.sh | bash
 ~~~
 
-_**Nota:** necesita la clave de administración para instalar dependencias y archivos.
+_**Nota:** necesita la clave de administración para instalar dependencias y archivos._
 
 Correr
 ------
