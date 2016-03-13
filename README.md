@@ -1,16 +1,16 @@
 SmartTV en GNU (realmente inteligente)
 ======================================
 
-Es un conjunto de aplacaciones para armar tu televisor realmente inteligente
+Es un conjunto de aplacaciones para armar tu televisor realmente inteligente, o sea descarga y reproduce series, peliculas y musica de torrent.
 
-![busca](img/inicio.png)
+![inicio](img/inicio.png)
 
 Como usarlo
 -----------
 
 ![elegi](img/elegi.png)
 
-![mira](img/presentacion.png)
+![presentacion](img/presentacion.png)
 
 ![mira](img/mira.png)
 
@@ -64,7 +64,6 @@ extras
 ------
 
 * **navegador:** epiphany
-* **Noticias:** liferea
 * **Clima:** conky
 * **historietas:** comix
 * **pdf:** evince
@@ -72,28 +71,36 @@ extras
 * **chat:** pidgin
 * **correo:** geary
 * **privacidad:** tor
+* **Noticias:** liferea
 
 Juegos
 ------
-* juntar por colores (brix, ..)
-* rompecabeza 
-* aventura simple (mario 1 o bubble)
-* tableto: 
 
+* juntar por colores: gweld
+* rompecabeza: pysol (es medio feo)
+* aventura simple (mario 1 o bubble)
+* tableto: gtkboard, xmahjongg
 
 Quehaceres
 ----------
 
-* musica: rolling stone host:www.allmusic.com/artist
-http://www.allmusic.com/artist/the-rolling-stones-mn0000894465/discography
+* musica esta mal como se generan los links
+* bajar la pelicula basado en los subtitulos (X)
+* normalizar el volumen
+* si las peliculas tienen muestra, elegir la mas grande (X)
+* opciones de zoom
+* opciones de idioma (subtitulos o doblada forzada)
 * quitar sombra a los subtitulos
-* lista negra y blanca
-* generar cache de las busquedas
 * vblog con lista de sitios (host:)
+* generar cache de las busquedas
+* mirar torrent-mount para la musica
+* poner pausa al X11 mientras reproduce una pelicula
+  * o poner en pausa al pidgin
 * mascota
 
 mirar esto:
 
+* teclado: http://ozzmaker.com/virtual-keyboard-for-the-raspberry-pi/?utm_source=feedly
 * https://github.com/Ivshti/stremio-addons-client
 * https://www.npmjs.com/package/multipass-torrent
 

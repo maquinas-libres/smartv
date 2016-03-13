@@ -16,4 +16,4 @@ StartupNotify=true
 Type=Application" > "$TEMP/espera.desktop"
 
 xdg-open "$TEMP" && torrent-buscar-carpeta " " "$TITULO" "$TEMP"
-rm "$TEMP/ZZZespera.desktop"
+rm "$TEMP/espera.desktop"

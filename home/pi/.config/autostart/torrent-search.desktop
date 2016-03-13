@@ -1,6 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Name=TorrentSearch
-Icon=Search
-Exec=/usr/local/bin/torrent-search
-TryExec=/usr/local/bin/torrent-search

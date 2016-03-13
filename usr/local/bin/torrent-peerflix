@@ -2,12 +2,13 @@
 #
 #	descarga y reproduce torrent
 #
-[ "$(ps ax | grep feh | wc -l)" -gt "1" ] && exit
+[ "$(pgrep feh)" ] && exit
 
 killall peerflix
 killall feh
 
 mkdir /tmp/bg/
+rm /tmp/bg/*jpg 2> /null
 # si existe otro torrent-peerflix se lo cancela
 function mensaje {
 	echo "$*" >> /tmp/info
@@ -16,9 +17,9 @@ function mensaje {
 function torrent-placa {
 	cd /tmp
 	# muestra la portada de la pelicula
-	rm /tmp/bg/* 2> /null
-	ln  ~/.cache/imdb/$2.jpg /tmp/bg/ || ln /usr/local/share/pixmaps/torrent-peerflix/* /tmp/bg/
-	feh /tmp/bg -qZF -D1 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "transmission-gtk $(cat /tmp/magnet) &; killall feh"
+	rm /tmp/bg/*jpg
+	[ "$2" == "" ] && ln /usr/local/share/pixmaps/torrent-peerflix/* /tmp/bg/ || ln ~/.cache/imdb/$2.jpg /tmp/bg/ 
+	feh /tmp/bg -qZYFr -R1 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "transmission-gtk $(cat /tmp/magnet) &; killall feh"
 	killall mpv
 	killall mplayer
 	killall omxplayer
@@ -37,8 +38,11 @@ DESCARGA=$(which transmission-gtk)
 
 echo > /tmp/info
 
-#[ $(df -H | grep /$ | expand | tr -s " " | cut -d " " -f5 | cut -d "%" -f1) -ge 85 ] && rm -r /tmp/torrent-stream/ &&  mensaje "¡¡disco lleno!!"
-
+if [ $(df -H | grep /$ | expand | tr -s " " | cut -d " " -f5 | cut -d "%" -f1) -ge 85 ]; then
+	rm -r /tmp/torrent-stream/
+	rm -r ~/.local/share/Trash/*
+	mensaje "¡¡disco lleno!!"
+fi
 torrent-placa "$1" $2 &
 
 
@@ -46,7 +50,6 @@ B=$1
 mensaje "$1"
 mensaje
 mensaje "Buscando Torrent..." > /dev/stderr
-#[ ! -f "$B" ] || 
 [ "$(echo $B | grep '^magnet')" == "" ] && B=$(torrent-buscar "$1" "$2")
 
 # si no hay que descargar cierra
@@ -55,6 +58,8 @@ mensaje "Buscando Torrent..." > /dev/stderr
 
 TITULO=$(echo | $PEERFLIX -l "$B" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
 echo $B > /tmp/magnet
+
+
 mensaje "¡Torrent encontrado!"
 
 mensaje "Analizando Torrent..." > /dev/stderr
@@ -93,8 +98,9 @@ if [ ! "$PELICULAS" == "" ]; then
 	PSUB=" --subtitles ~/.cache/sub/$MD5SUB "
 	SUB=" ~/.cache/sub/$MD5SUB "
 
-	[ -x "$(which mplayer)" ] && PLAY="-m -- -utf8 -sub $SUB -fs" && PG="mplayer"
+
 	[ -x "$(which mpv)" ] && PLAY="-k -- --sub $SUB -fs"  && PG="mpv"
+	[ -x "$(which mplayer)" ] && PLAY="-m -- -utf8 -sub $SUB -fs" && PG="mplayer"
 	[ -x "$(which omxplayer)" ] && PLAY="-o -- --align center --vol 6 --timeout 30 $PSUB " && PG="omxplayer"
 
 	sleep 4
@@ -142,7 +148,7 @@ exit
 Quehaceres
 ==========
 
-- proponer desgar peliculas que van a tardar mucho
+- proponer descagar peliculas que van a tardar mucho
 - agregar tipo de archivo a las listas
 - verificar pares
 - hacer advertencias lindas para cuando se descargan cosas

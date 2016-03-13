@@ -65,8 +65,8 @@ torrent-buscar-carpeta $GENERO "" "$VIDEO/$DIR/"
 
 done
 
-torrent-buscar-carpeta "" "" "$VIDEO/Argentinas/" "ar"
-torrent-buscar-carpeta "" "" "$VIDEO/Mexicanas/" "mx"
+
+torrent-buscar-carpeta "+" "" "$VIDEO/Películas/Argentinas" "" "ar"
 
 echo "[Desktop Entry]
 Version=1.0

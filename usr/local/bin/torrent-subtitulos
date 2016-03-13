@@ -47,34 +47,35 @@ subdl --lang=spa --imdb-id=$IMDB --download="$IDD" --force-imdb "$NOMBRE" 2> /de
 rm "$NOMBRE"
 
 [ "$(ls)" == "" ] && exit
+mensaje "Subtitulos encontrados"
 echo $ARCHIVO
 
 rename 's/[^0-9a-zA-Z]//g' *
 L="$(ls)"
 
-mensaje "$LISTA"	#debug
+#mensaje "$LISTA"	#debug
 #mensaje "Subtitulo $L"	#debug
-mensaje "Pelicula $NOMBRE"	#debug
+#mensaje "Pelicula $NOMBRE"	#debug
 
-#mensaje "Mejorando subtitulos..."
-mensaje "Codigo $(enca -L none $L)"
+#Mensaje "Mejorando subtitulos..."
 
 # codifica todo en UTF8 - falta detectar el formato original
-[ "$(cat $L | grep é)" == "" ] && enca -L none -x UTF8 $L # probar si esto funciona
-# recode latin1..utf8
-
+[ "$(cat $L | grep é)" == "" ] &&  (recode $(file -i "$L" |cut -d'=' -f2)..utf8 $L || recode latin1..utf8 $L)
+[ "$(cat $L | grep Ã)" == "" ] && mensaje "problemas de codificación"
+# esto tiene fallas todavia
 
 # quitar la publicidad
 
-sed -i "/OpenSubtitles\.org/d; \
-/Apoyanos y convierte/d; \
-/remover todos los anuncios/d; \
-/Anuncie su producto o marca/d; \
-/Downloaded/d; \
-s/#\(\ \|$\)/♪\1/g; s/#.$/♫/g; \
-/AllSubs.org/d;" $L
+sed -i "s/^.*OpenSubtitles\.org.*$/.../g; \
+s/^Apoyanos y convierte.*$/.../g; \
+s/^.*remover todos los anuncios.*$/.../g; \
+s/^Anuncie su producto o marca.*$/.../g; \
+s/^Downloaded.*$/.../g; \
+s/#\(\ \|$\|<\)/♪\1/g; s/#.$/♫/g; \
+s/^.*AllSubs.org/.../g; " $L
 
-mensaje "Subtitulos encontrados"
+#s/[^0-9A-Za-z<>\.\ ,\;\:\(\){}\#\@\$\¡\!¿?%&\"\-]//g; \
+
 
 mv "$L" "$ARCHIVO"
 

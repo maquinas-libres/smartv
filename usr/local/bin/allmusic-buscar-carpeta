@@ -22,9 +22,9 @@ function limpiar {
 	echo $* | sed 's/^.*\///; s/-m.[0-9].*$//;  s/-/\ /g; s/^./\u&/; s@+@ @g;s@%@\\x@g' | xargs -0 printf "%b"
 }
 
-lynx -dump -nonumbers http://www.allmusic.com/genres | grep "^http://www.allmusic.com/genre/" | sort -u | while read G; do
+lynx -dump -nonumbers http://www.allmusic.com/genres | grep "http.*www.allmusic.com/genre/" | grep -v holiday | sort -Ru | while read G; do
 	# falta la primera letra
-	GENERO=$(limpiar $($G | sed 's/childrens/infantil/g; s/classical/clasica/g;'))
+	GENERO=$(limpiar $(echo $G | sed 's/childrens/infantil/g; s/classical/clasica/g;'))
 	echo $GENERO
 	mkdir -p "$MUSICA/$GENERO" 2> /dev/stderr
 	lynx -dump -nonumbers $G/artists | grep "^http://www.allmusic.com/artist/" | sort -u | while read A; do
@@ -32,7 +32,7 @@ lynx -dump -nonumbers http://www.allmusic.com/genres | grep "^http://www.allmusi
 		ARTISTA=$(limpiar $A)
 		echo $ARTISTA
 		mkdir -p "$MUSICA/Artistas/$ARTISTA" 2> /dev/stderr
-		lynx -dump -nonumbers $A | grep "^http://www.allmusic.com/album/" | sort -u | while read D; do
+		lynx -dump -nonumbers $A | grep "^http.*www.allmusic.com/album/" | sort -u | while read D; do
 			DISCO=$(limpiar $D)
 			echo $DISCO
 			ID="$(echo $ARTISTA+$DISCO | md5sum | cut -d" " -f1)"
@@ -54,7 +54,7 @@ Icon=$IMG
 StartupNotify=true
 Type=Application" > "$MUSICA/Artistas/$ARTISTA/$ID.desktop"
 
-			ln -s "$MUSICA/Artistas/$ARTISTA/" "$MUSICA/$GENERO/" 2> /dev/null
+			ln  "$MUSICA/Artistas/$ARTISTA/" "$MUSICA/$GENERO/" 2> /dev/null
 		done
 	done
 done

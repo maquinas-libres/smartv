@@ -8,10 +8,11 @@
 # carpeta para el cache
 mkdir ~/.cache/imdb/ 2> /dev/null
 # directorio de videos
-[ "$3" == "" ] && VIDEO="$(xdg-user-dir VIDEOS)/Películas" || VIDEO=$3
+VIDEO=$3
+[ "$VIDEO" == "" ] && VIDEO="$(xdg-user-dir VIDEOS)/Películas"
 
 # genera la carpeta si no existe
-mkdir -p "VIDEO" 2> /dev/stderr
+mkdir -p "$VIDEO" 2> /dev/stderr
 
 # como se ve
 PROGRAMA="torrent-peerflix"
@@ -32,6 +33,9 @@ TIPO="feature"
 
 [ ! "$4" == "" ] && TIPO="$4"
 
+# lynx http://www.imdb.com/title/tt0316613/episodes -dump | grep -i season | head -n 1 | sed 's/[^0-9]//g'
+
+
 wget "https://www.imdb.com/search/title?count=200&sort=num_votes,desc&title_type=${TIPO}&genres=${GENERO}&title=${TITULO}&countries=$5" -qO - \
 | grep title.*img | cut -d '"' -f2,4,6 | sed 's/\"/\t/g; s/\/title\/tt//g;' \
 | while read A; do
@@ -41,16 +45,17 @@ wget "https://www.imdb.com/search/title?count=200&sort=num_votes,desc&title_type
 	IMG=~/.cache/imdb/$ID.jpg
 	# comprobar si esta en torrentz.eu
 	LOW="$(echo "$A" | cut -d "	" -f3)"
-	#HD="$(echo "$URL" | sed 's/@.*$/@._V1._SY256_.jpg/')"
+	MED="$(echo "$URL" | sed 's/@.*$/@._V1._SY256_.jpg/')"
 	if [ ! -f ~/.cache/imdb/$ID.jpg ]; then
 		URL=$(lynx -dump https://www.imdb.com/title/tt$ID/ -nonumbers | grep www.imdb.com/media/ | grep $ID | head -n1)
 		sleep 1
 		HD=$(lynx -dump $URL -image_links -nonumbers | grep "media-imdb.com.*\.jpg$" | head -n2 | tail -n1)
 		# descarga en hd si no puede en lw y si no, no genera el link, si da error continua
-		wget -t 1 "$HD" -qO $IMG || wget -t 1 "$LOW" -qO $IMG || (rm $IMG; continue)
+		wget -t 1 "$HD" -qO $IMG || wget -t 1 "$MED" -qO $IMG || wget -t 1 "$LOW" -qO $IMG || (rm $IMG; continue)
 	fi
 	NOMBRE=$(echo "$A" | cut -d "	" -f2 | sed 's/#xed/#xed;/g' | recode html..utf8 | sed 's/[^a-zA-Z0-9¿?¡!\.\,()\ ]//g; s/^\ *//g; s/,$//g;s/^u//')
 
+[ ! -f ~/.cache/imdb/$ID.jpg ] && continue
 echo "[Desktop Entry]
 Version=1.0
 Name=$NOMBRE

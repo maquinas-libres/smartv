@@ -3,7 +3,7 @@
 #	torrent o magnet
 #	$1: nombre	$2: imdb
 
-
+rm /tmp/pares &
 
 # generar un nombre|nombre| para diferentes idiomas
 NOMBRE=$(echo $1 | sed 's/,\|\./ /g; s/[^a-zA-Z0-9\ -]//g; s/\ /+/g')
@@ -15,25 +15,31 @@ echo $NOMBRE > /dev/stderr
 #	falta:
 #	tambien buscar sin años y sin acentos
 
+HASH=$(echo "$NOMBRE+latino|español|spanish" | grep -vi "$NEGRA" | grep -i "$BLANCA" | head -n1 | cut -d"	" -f1)
+[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE && exit
+
 # busca los subtitulos posibles para buscar los videos en torrentz
 # esta lista puede ser guardada para subtitulos alternativos
-touch /tmp/pepe 2> /dev/null
-subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb /tmp/pepe \
-| cut -d '"' -f3 | grep \.srt | sed 's/\ *$//g; s/^\ //g; s/\....$//g;  s/\....//g' \
+mkdir /tmp/sub/
+touch "/tmp/sub/$1" 2> /dev/null
+subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb "/tmp/sub/$1" \
+| cut -d '"' -f3 | grep \.srt | sed 's/\ *$//g; s/^\ //g; s/\....$//g;  s/\(\.|-\)...//g; s/\.[^\.]*$//' \
+| grep ............* \
+| grep -iv "cd\(\|.\)[1-2]" \
 | while read SNOMBRE; do
 	echo "probando con $SNOMBRE" >> /tmp/info
 	# busca el nombre basado en los subtitulos
-	BUSQUEDA=$(torrentz-dl "$SNOMBRE" peerflix)
-	[ ! "$BUSQUEDA" == "" ] && echo "este"  >> /tmp/info  && break
+	BUSQUEDA=$(torrentz-dl "\"$SNOMBRE\"" peerflix)
+	[ ! "$BUSQUEDA" == "" ] && echo -e "Subtitulos encontrados\nDescargando... $BUSQUEDA"  >> /tmp/info && break
 done
 # falta que tenga la mayor cantidad de pares
 
 # busqueda normal y kickass por imdb
-[ "$BUSQUEDA" == "" ] && BUSQUEDA=$(torrentz-dl "$NOMBRE" peerflix; [ ! "$IMDB" == "" ] && kickass-dl $IMDB)
+[ "$BUSQUEDA" == "" ] && BUSQUEDA=$([ ! "$IMDB" == "" ] && kickass-dl $IMDB; torrentz-dl "$NOMBRE" peerflix)
 
 # sin el año
 [ "$BUSQUEDA" == "" ] && BUSQUEDA=$(torrentz-dl $(echo "$NOMBRE" | sed 's/....$//') peerflix)
-[ "$BUSQUEDA" == "" ] && exit # tal vez pueda reducir el nombre
+[ "$BUSQUEDA" == "" ] && exit # tal vez pueda reducir el nombre o buscar en youtube, vblog, etc
 
 
 # busquedas mas filtros
@@ -51,6 +57,7 @@ HASH=$(echo "BUSQUEDA" | grep -vi "$NEGRA" | grep -i "$BLANCA" | head -n1 | cut 
 
 echo "Pares: $(echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2)" >> /tmp/info
 
+echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"       " -f2 > /tmp/pares
 
 
 exit
@@ -59,7 +66,7 @@ Quehaceres
 ==========
 
 * hacer una gran lista ordenada (X)
-  * si no tiene o tiene subtitulo (X)
+  * si no tiene o tiene subtitulo (X) no funciona tan bien :S
 * si no encuentran nada en torrent levanta cosas en descarga directa
 
 

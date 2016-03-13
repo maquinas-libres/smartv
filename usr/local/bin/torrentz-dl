@@ -18,6 +18,7 @@ echo $(wget "https://torrentz.eu/feed_any?q=${1}+${MODO}" -qO -) \
 	X=$(echo "$L" | grep descrip | head -n1 | sed -e 's/<[^>]*>//g')
 	# peso, pares y hash
 	PESO=$(echo "$X" | cut -d: -f2 | sed 's/[^0-9]//g')
+	# capaz es mejor buscar seeds
 	PARES=$(echo "$X" | cut -d: -f3 | sed 's/[^0-9]//g')
-	echo "$HASH	$PARES	$(($PESO*1000))	$TITULO"
+	echo "$HASH	$PARES	${PESO}MB	$TITULO"
 done
