@@ -36,10 +36,20 @@ Este se renueva cada X cantidad de tiempo.
 Instalar en GNU
 ===============
 
-Instalar dependencias. 
-Copiar la carpeta `home/pi/bin` en la carpeta del usuario `~/bin`, de modo que sean ejecutables.
-Tambien se los puede copiar en `/usr/local/bin`.
+~~~
+wget -O - https://raw.githubusercontent.com/maquinas-libres/smartv/master/instalar.sh | bash
+~~~
 
+_**Nota:** necesita la clave de administración para instalar dependencias y archivos.
+
+Correr
+------
+
+~~~
+torrent-buscar-carpeta-genero
+~~~
+
+Esto genera los lanzadores de peliculas en `~/Vídeos/Películas`
 
 Instalar en raspberry
 =====================
