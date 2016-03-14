@@ -10,9 +10,12 @@ rm /tmp/pares 2> /dev/null &
 # generar un nombre|nombre| para diferentes idiomas
 NOMBRE=$(echo $1 | sed 's/,\|\./ /g; s/[^a-zA-Z0-9\ -]//g; s/\ /+/g')
 echo $NOMBRE > /dev/stderr
-[ ! "$(head /tmp/$NOMBRE)" == "" ]&& cat /tmp/$NOMBRE && exit
+#[ ! "$(head /tmp/$NOMBRE)" == "" ]&& cat /tmp/$NOMBRE && exit
 
 [ "$2" == "" ] && IMDB=$(torrent-imdb "$NOMBRE") || IMDB=$2
+NORIGINAL=$(lynx http://www.imdb.com/title/tt$IMDB/ -dump -nolist | grep "\(Title:\|original\)" | cut -d: -f2 | cut -d "(" -f1 | head -n1 | sed 's/\ *$//g; s/^\ //g;')
+echo $IMDB
+echo $NORIGINAL
 
 #	falta:
 #	tambien buscar sin años y sin acentos
@@ -21,8 +24,11 @@ NEGRA="$HOME/.negra"
 BLANCA="$HOME/.blanca"
 
 # crear este link con la lista blanca
-HASH=$(torrentz-dl "$NOMBRE+latino|español|spanish+-sub+-subtile+-subtitulos" | grep -iv -f $NEGRA - | grep -i -f $BLANCA - | head -n1 | cut -d"	" -f1)
+# falta el nombre original, si no es complicdo que lo encuentre
+HASH=$(torrentz-dl "\"$NOMBRE\"|\"$NORIGINAL\"+latino|español|spanish+-sub+-subtitles+-subtitulos" | grep -iv -f $NEGRA - | grep -i -f $BLANCA - | head -n1 | cut -d"	" -f1)
 [ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE && exit
+
+# falta comprobar los pares ↑
 
 # busca los subtitulos posibles para buscar los videos en torrentz
 # esta lista puede ser guardada para subtitulos alternativos
