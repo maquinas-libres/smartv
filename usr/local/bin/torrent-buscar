@@ -3,6 +3,8 @@
 #	torrent o magnet
 #	$1: nombre	$2: imdb
 
+[ "$1" == "" ] && exit
+
 rm /tmp/pares &
 
 # generar un nombre|nombre| para diferentes idiomas
@@ -15,7 +17,10 @@ echo $NOMBRE > /dev/stderr
 #	falta:
 #	tambien buscar sin años y sin acentos
 
-HASH=$(echo "$NOMBRE+latino|español|spanish" | grep -vi "$NEGRA" | grep -i "$BLANCA" | head -n1 | cut -d"	" -f1)
+NEGRA="~/.negra"
+BLANCA="~/.blanca"
+
+HASH=$(echo "$NOMBRE+latino|español|spanish" | grep -vfi "$NEGRA" - | grep -fi "$BLANCA" - | head -n1 | cut -d"	" -f1)
 [ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE && exit
 
 # busca los subtitulos posibles para buscar los videos en torrentz
@@ -44,12 +49,10 @@ done
 
 # busquedas mas filtros
 # esto moverlo a .torrent-buscar/ o algo asi
-NEGRA=$(cat ~/.negra)
-BLANCA=$(cat ~/.blanca)
-HASH=$(echo "BUSQUEDA" | grep -vi "$NEGRA" | grep -i "$BLANCA" | head -n1 | cut -d"	" -f1)
+HASH=$(echo "BUSQUEDA" | grep -vfi "$NEGRA" - | grep -fi "$BLANCA" - | head -n1 | cut -d"	" -f1)
 
 # busca solo filtrando la lista negra
-[ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -vi "$NEGRA" | head -n1 | cut -d"	" -f1)
+[ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -fi "$NEGRA" - | head -n1 | cut -d"	" -f1)
 
 
 # devuelve el hash y guarda el cache
@@ -58,6 +61,8 @@ HASH=$(echo "BUSQUEDA" | grep -vi "$NEGRA" | grep -i "$BLANCA" | head -n1 | cut 
 echo "Pares: $(echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2)" >> /tmp/info
 
 echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"       " -f2 > /tmp/pares
+
+# aca puede comenzar con dd-dl
 
 
 exit
@@ -68,5 +73,3 @@ Quehaceres
 * hacer una gran lista ordenada (X)
   * si no tiene o tiene subtitulo (X) no funciona tan bien :S
 * si no encuentran nada en torrent levanta cosas en descarga directa
-
-
