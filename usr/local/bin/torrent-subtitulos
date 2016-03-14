@@ -61,7 +61,7 @@ L="$(ls)"
 
 # codifica todo en UTF8 - falta detectar el formato original
 [ "$(cat $L | grep é)" == "" ] &&  (recode $(file -i "$L" |cut -d'=' -f2)..utf8 $L || recode latin1..utf8 $L)
-[ "$(cat $L | grep Ã)" == "" ] && mensaje "problemas de codificación"
+[ ! "$(cat $L | grep Ã)" == "" ] && mensaje "problemas de codificación"
 # esto tiene fallas todavia
 
 # quitar la publicidad
