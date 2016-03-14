@@ -7,4 +7,4 @@ wget https://github.com/maquinas-libres/smartv/archive/master.zip
 unzip master.zip
 cd smartv-master
 
-sudo cp -r usr/local /usr/local
+sudo cp -r usr/local/* /usr/local
