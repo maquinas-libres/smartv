@@ -5,7 +5,7 @@
 
 [ "$1" == "" ] && exit
 
-rm /tmp/pares &
+rm /tmp/pares 2> /dev/null &
 
 # generar un nombre|nombre| para diferentes idiomas
 NOMBRE=$(echo $1 | sed 's/,\|\./ /g; s/[^a-zA-Z0-9\ -]//g; s/\ /+/g')
@@ -17,15 +17,16 @@ echo $NOMBRE > /dev/stderr
 #	falta:
 #	tambien buscar sin años y sin acentos
 
-NEGRA="~/.negra"
-BLANCA="~/.blanca"
+NEGRA="$HOME/.negra"
+BLANCA="$HOME/.blanca"
 
-HASH=$(echo "$NOMBRE+latino|español|spanish" | grep -vfi "$NEGRA" - | grep -fi "$BLANCA" - | head -n1 | cut -d"	" -f1)
+# crear este link con la lista blanca
+HASH=$(torrentz-dl "$NOMBRE+latino|español|spanish+-sub+-subtile+-subtitulos" | grep -iv -f $NEGRA - | grep -i -f $BLANCA - | head -n1 | cut -d"	" -f1)
 [ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE && exit
 
 # busca los subtitulos posibles para buscar los videos en torrentz
 # esta lista puede ser guardada para subtitulos alternativos
-mkdir /tmp/sub/
+mkdir /tmp/sub/ 2> /dev/null
 touch "/tmp/sub/$1" 2> /dev/null
 subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb "/tmp/sub/$1" \
 | cut -d '"' -f3 | grep \.srt | sed 's/\ *$//g; s/^\ //g; s/\....$//g;  s/\(\.|-\)...//g; s/\.[^\.]*$//' \
@@ -49,10 +50,10 @@ done
 
 # busquedas mas filtros
 # esto moverlo a .torrent-buscar/ o algo asi
-HASH=$(echo "BUSQUEDA" | grep -vfi "$NEGRA" - | grep -fi "$BLANCA" - | head -n1 | cut -d"	" -f1)
+HASH=$(echo "BUSQUEDA" | grep -iv -f $NEGRA - | grep -i -f $BLANCA - | head -n1 | cut -d"	" -f1)
 
 # busca solo filtrando la lista negra
-[ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -fi "$NEGRA" - | head -n1 | cut -d"	" -f1)
+[ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -iv -f $NEGRA - | head -n1 | cut -d"	" -f1)
 
 
 # devuelve el hash y guarda el cache
@@ -60,7 +61,7 @@ HASH=$(echo "BUSQUEDA" | grep -vfi "$NEGRA" - | grep -fi "$BLANCA" - | head -n1 
 
 echo "Pares: $(echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2)" >> /tmp/info
 
-echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"       " -f2 > /tmp/pares
+echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2 > /tmp/pares
 
 # aca puede comenzar con dd-dl
 
