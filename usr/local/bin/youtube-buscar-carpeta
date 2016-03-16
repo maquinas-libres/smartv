@@ -55,3 +55,10 @@ Type=Application" > "$VIDEO/$DIR/$ID.desktop"
 	echo $NOMBRE > /dev/stderr
 	sleep 1
 done
+
+exit
+
+Quehaceres
+==========
+
+* quitar listas de las busquedas

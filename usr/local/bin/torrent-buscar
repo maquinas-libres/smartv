@@ -5,54 +5,48 @@
 
 [ "$1" == "" ] && exit
 
+function mensaje {
+        echo "$*" >> /tmp/info
+}
+
 rm /tmp/pares 2> /dev/null &
 
 # generar un nombre|nombre| para diferentes idiomas
 NOMBRE=$(echo $1 | sed 's/,\|\./ /g; s/[^a-zA-Z0-9\ -]//g; s/\ /+/g')
 echo $NOMBRE > /dev/stderr
-#[ ! "$(head /tmp/$NOMBRE)" == "" ]&& cat /tmp/$NOMBRE && exit
+
+mensaje "Buscando torrent..."
 
 [ "$2" == "" ] && IMDB=$(torrent-imdb "$NOMBRE") || IMDB=$2
 NORIGINAL=$(lynx http://www.imdb.com/title/tt$IMDB/ -dump -nolist | grep "\(Title:\|original\)" | cut -d: -f2 | cut -d "(" -f1 | head -n1 | sed 's/\ *$//g; s/^\ //g;')
-echo $IMDB
-echo $NORIGINAL
+echo $IMDB > /dev/stderr
+echo $NORIGINAL > /dev/stderr
 
+ANO=$(echo "$1" | cut -d '(' -f2 | sed 's/[^0-9]//g')
 #	falta:
 #	tambien buscar sin años y sin acentos
 
 NEGRA="$HOME/.negra"
 BLANCA="$HOME/.blanca"
 
-# crear este link con la lista blanca
-# falta el nombre original, si no es complicdo que lo encuentre
-HASH=$(torrentz-dl "\"$NOMBRE\"|\"$NORIGINAL\"+latino|español|spanish+-sub+-subtitles+-subtitulos" | grep -iv -f $NEGRA - | grep -i -f $BLANCA - | head -n1 | cut -d"	" -f1)
-[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE && exit
+mensaje "Buscando doblada"
 
-# falta comprobar los pares ↑
+BUSQUEDA=$(torrentz-dl "\"${NOMBRE}\"|\"${NORIGINAL}\"+${ANO}+latino|español|spanish+-sub+-subtitles+-subtitulos" peerflix)
 
-# busca los subtitulos posibles para buscar los videos en torrentz
-# esta lista puede ser guardada para subtitulos alternativos
-mkdir /tmp/sub/ 2> /dev/null
-touch "/tmp/sub/$1" 2> /dev/null
-subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb "/tmp/sub/$1" \
-| cut -d '"' -f3 | grep \.srt | sed 's/\ *$//g; s/^\ //g; s/\....$//g;  s/\(\.|-\)...//g; s/\.[^\.]*$//' \
-| grep ............* \
-| grep -iv "cd\(\|.\)[1-2]" \
-| while read SNOMBRE; do
-	echo "probando con $SNOMBRE" >> /tmp/info
-	# busca el nombre basado en los subtitulos
-	BUSQUEDA=$(torrentz-dl "\"$SNOMBRE\"" peerflix)
-	[ ! "$BUSQUEDA" == "" ] && echo -e "Subtitulos encontrados\nDescargando... $BUSQUEDA"  >> /tmp/info && break
-done
-# falta que tenga la mayor cantidad de pares
+echo "$BUSQUEDA" > /dev/stderr
+mensaje " no disponible..."
+mensaje "Buscando subtitulada"
 
-# busqueda normal y kickass por imdb
-[ "$BUSQUEDA" == "" ] && BUSQUEDA=$([ ! "$IMDB" == "" ] && kickass-dl $IMDB; torrentz-dl "$NOMBRE" peerflix)
+[ "$BUSQUEDA" == "" ] && BUSQUEDA=$( \
+torrentz-dl "\"$NOMBRE\"|\"${NORIGINAL}\"+${ANO}" peerflix; \
+[ ! "$IMDB" == "" ] && kickass-dl $IMDB; \
+torrentz-dl $(echo "$NOMBRE" | sed 's/....$//') peerflix \
+)
 
-# sin el año
-[ "$BUSQUEDA" == "" ] && BUSQUEDA=$(torrentz-dl $(echo "$NOMBRE" | sed 's/....$//') peerflix)
-[ "$BUSQUEDA" == "" ] && exit # tal vez pueda reducir el nombre o buscar en youtube, vblog, etc
+echo "$BUSQUEDA" > /dev/stderr
 
+# aca puede comenzar con dd-dl
+#[ "$BUSQUEDA" == "" ] && (dd-dl "$NOMBRE" "gnula.nu" | sed 's/\t.*$//g'; exit)
 
 # busquedas mas filtros
 # esto moverlo a .torrent-buscar/ o algo asi
@@ -61,15 +55,11 @@ HASH=$(echo "BUSQUEDA" | grep -iv -f $NEGRA - | grep -i -f $BLANCA - | head -n1 
 # busca solo filtrando la lista negra
 [ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -iv -f $NEGRA - | head -n1 | cut -d"	" -f1)
 
-
 # devuelve el hash y guarda el cache
 [ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE
-
-echo "Pares: $(echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2)" >> /tmp/info
-
+mensaje "Pares: $(echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2)"
 echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2 > /tmp/pares
 
-# aca puede comenzar con dd-dl
 
 
 exit
@@ -77,6 +67,9 @@ exit
 Quehaceres
 ==========
 
+* creo que deberia hacer todas las busquedas y luego encontrar el mas apropiado de los torrent
+* para busquedas en español tenes en cuenta los pares minimos y verificar años
 * hacer una gran lista ordenada (X)
   * si no tiene o tiene subtitulo (X) no funciona tan bien :S
 * si no encuentran nada en torrent levanta cosas en descarga directa
+

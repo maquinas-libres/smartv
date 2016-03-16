@@ -6,8 +6,8 @@
 
 [ "$2" == "peerflix" ] && MODO="seed%3E3+size+300m+-+1700m"
 [ "$2" == "Peliculas" ] && MODO="movie*"
-[ "$2" == "Libro" ] && MODO="book*"
-[ "$2" == "Comix" ] && MODO="comic*"
+[ "$2" == "Libro" ] && MODO="ebooks*"
+[ "$2" == "Comic" ] && MODO="comic*"
 [ "$2" == "Musica" ] && MODO="music*"
 
 echo $(wget "https://torrentz.eu/feed_any?q=${1}+${MODO}" -qO -) \

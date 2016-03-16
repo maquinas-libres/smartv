@@ -1,5 +1,4 @@
 #!/bin/bash
 
-rm /tmp/bg/$(ls /tmp/bg/ | grep jpg$) 2> /null
-ln /usr/local/share/pixmaps/torrent-peerflix/* /tmp/bg/ &
-x-terminal-emulator -e "/usr/bin/omxplayer $(echo $*; echo > /tmp/info)"
+cp /usr/local/share/pixmaps/torrent-peerflix/carga.jpg /tmp/bg.jpg &
+x-terminal-emulator -e "NOREFRESH=1 /usr/bin/omxplayer $(echo $*; echo > /tmp/info)"

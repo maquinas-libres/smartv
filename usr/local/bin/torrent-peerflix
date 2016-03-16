@@ -2,14 +2,13 @@
 #
 #	descarga y reproduce torrent
 #
+
 [ "$(pgrep feh)" ] && exit
+# si existe otro torrent-peerflix se lo cancela
 
 killall peerflix
 killall feh
 
-mkdir /tmp/bg/
-rm /tmp/bg/*jpg 2> /null
-# si existe otro torrent-peerflix se lo cancela
 function mensaje {
 	echo "$*" >> /tmp/info
 }
@@ -17,13 +16,13 @@ function mensaje {
 function torrent-placa {
 	cd /tmp
 	# muestra la portada de la pelicula
-	rm /tmp/bg/*jpg
-	[ "$2" == "" ] && ln /usr/local/share/pixmaps/torrent-peerflix/* /tmp/bg/ || ln ~/.cache/imdb/$2.jpg /tmp/bg/ 
-	feh /tmp/bg -qZYFr -R1 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "transmission-gtk $(cat /tmp/magnet) &; killall feh"
-	killall mpv
-	killall mplayer
+	rm /tmp/bg.jpg
+	[ "$2" == "" ] && cp /usr/local/share/pixmaps/torrent-peerflix/ /tmp/bg.jpg || cp ~/.cache/imdb/$2.jpg /tmp/bg.jpg
+	feh /tmp/bg.jpg -qZYFr -R1 -C /usr/share/fonts/truetype/dejavu/ -e "DejaVuSans/18" -N --title "$1" --info "cat /tmp/info" -A "transmission-gtk $(cat /tmp/magnet) &; killall feh"
 	killall omxplayer
 	killall omxplayer.bin
+	killall mpv
+	killall mplayer
 	killall peerflix
 	killall torrent-peerflix
 
@@ -40,16 +39,16 @@ echo > /tmp/info
 
 if [ $(df -H | grep /$ | expand | tr -s " " | cut -d " " -f5 | cut -d "%" -f1) -ge 85 ]; then
 	rm -r /tmp/torrent-stream/
-	rm -r ~/.local/share/Trash/*
+	[ "$USER" == "pi" ] && sudo rm -r ~/.local/share/Trash/*
 	mensaje "¡¡disco lleno!!"
 fi
+
 torrent-placa "$1" $2 &
 
 
 B=$1
 mensaje "$1"
 mensaje
-mensaje "Buscando Torrent..." > /dev/stderr
 [ "$(echo $B | grep '^magnet')" == "" ] && B=$(torrent-buscar "$1" "$2")
 
 # si no hay que descargar cierra
@@ -57,7 +56,7 @@ mensaje "Buscando Torrent..." > /dev/stderr
 
 
 TITULO=$(echo | $PEERFLIX -l "$B" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
-echo $B > /tmp/magnet
+echo "$B" > /tmp/magnet
 
 
 mensaje "¡Torrent encontrado!"
@@ -73,7 +72,7 @@ function lista () {
 
 # peliculas
 # avi mp4 mkv ogv ogg wmv mov m4v mpg mpeg
-PELICULAS=$(echo "$TITULO"| grep -i "\.\(avi\|mp4\|mkv\|m4v\|og.\|wmv\|mov\|divx\|vob\)\ " | grep -iv "sample\...." )
+PELICULAS=$(echo "$TITULO"| grep -i "\.\(avi\|mp4\|mkv\|m4v\|og.\|wmv\|mov\|divx\|vob\)\ " | grep -iv "sample" )
 if [ ! "$PELICULAS" == "" ]; then
 
 	CANTIDAD=$(echo "$PELICULAS" | wc -l)
@@ -91,16 +90,16 @@ if [ ! "$PELICULAS" == "" ]; then
 	# nombre de la pelicula buscada
 	NOMBRE=$(echo $PELICULA | cut -d: -f2 | sed 's/^\ *//g; s/\ *$//g')
 
-	MD5SUB=$(echo "$NOMBRE" | md5sum | cut -d" " -f1)
-	[ "$(head ~/.cache/sub/$MD5SUB)" == "" ] && torrent-subtitulos "$NOMBRE" "$2" &
+	#MD5SUB=$(echo "$NOMBRE" | md5sum | cut -d" " -f1)
+	[ "$(head ~/.cache/sub/$2/0)" == "" ] && torrent-subtitulos "$NOMBRE" "$2" &
 	# intenta bajar los subtitulos en español
 	#if [ -f ~/.cache/sub/$MD5SUB ]; then
-	PSUB=" --subtitles ~/.cache/sub/$MD5SUB "
-	SUB=" ~/.cache/sub/$MD5SUB "
+	PSUB=" --subtitles ~/.cache/sub/$2/0 "
+	SUB="-sub ~/.cache/sub/$2/0 "
 
 
-	[ -x "$(which mpv)" ] && PLAY="-k -- --sub $SUB -fs"  && PG="mpv"
-	[ -x "$(which mplayer)" ] && PLAY="-m -- -utf8 -sub $SUB -fs" && PG="mplayer"
+	[ -x "$(which mpv)" ] && PLAY="-k -- -$SUB -fs"  && PG="mpv"
+	[ -x "$(which mplayer)" ] && PLAY="-m -- -utf8 $SUB -fs" && PG="mplayer"
 	[ -x "$(which omxplayer)" ] && PLAY="-o -- --align center --vol 6 --timeout 30 $PSUB " && PG="omxplayer"
 
 	sleep 4
@@ -108,7 +107,7 @@ if [ ! "$PELICULAS" == "" ]; then
 	mensaje "Presione \"0\" para descarga"
 	mensaje "y ver después..."
 	mensaje
-	touch ~/.cache/sub/$MD5SUB
+	touch ~/.cache/sub/$2/0
 	(sleep 15; while [ ! $(pgrep $PG) ]; do  mensaje "Esperando más pares..."; sleep 15; done) &
 	#guarda la hora
 	DATE="$(date +%s)"
