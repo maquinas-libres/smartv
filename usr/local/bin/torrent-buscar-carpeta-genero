@@ -32,17 +32,13 @@ documentary	Documental
 drama	Drama
 fantasy	Fantasia
 romance	Romantica
-film_noir	Policial
-history	Historía
-Terror	Horror
+film_noir	Film\ Noir
+terror	Terror
 musical	Músical
 mystery	Misterio
 sci_fi	Ciencia Ficción
 war	Belica
-western	Oeste
-music	Música
-game_show	Espectaculo
-sport	Deporte" | sort -R| while read G; do
+western	Oeste" | sort -R| while read G; do
 
         DIR="$(echo "$G" | sed 's/^.*\t//g')"
         mkdir -p "$VIDEO/$DIR" 2> /dev/null
@@ -65,8 +61,8 @@ torrent-buscar-carpeta $GENERO "" "$VIDEO/$DIR/"
 
 done
 
-
 torrent-buscar-carpeta "+" "" "$VIDEO/Películas/Argentinas" "" "ar"
+torrent-buscar-carpeta "+" "" "$VIDEO/Películas/Italianas" "" "it"
 
 echo "[Desktop Entry]
 Version=1.0
