@@ -91,7 +91,7 @@ if [ ! "$PELICULAS" == "" ]; then
 	NOMBRE=$(echo $PELICULA | cut -d: -f2 | sed 's/^\ *//g; s/\ *$//g')
 
 	#MD5SUB=$(echo "$NOMBRE" | md5sum | cut -d" " -f1)
-	[ "$(head ~/.cache/sub/$2/0)" == "" ] && torrent-subtitulos "$NOMBRE" "$2" &
+	[ "$(head ~/.cache/sub/$2/0)" == "" ] && torrent-subtitulos "$NOMBRE" "$2"
 	# intenta bajar los subtitulos en español
 	#if [ -f ~/.cache/sub/$MD5SUB ]; then
 	PSUB=" --subtitles ~/.cache/sub/$2/0 "
@@ -114,8 +114,13 @@ if [ ! "$PELICULAS" == "" ]; then
 	rm /tmp/video 2> /dev/null
 	DATE="$(date +%s)"
 	for R in {1..5}; do
-		[ "$(echo $B | grep '^magnet')" == "" ] && $PEERFLIX "$B" -i $N $PLAY || \
-		(youtube-dl "$B" -o $VIDEO &; sleep 30; x-terminal-emulator -e "$PG $PLAY $VIDEO")
+		if [ ! "$(echo $B | grep '^magnet')" == "" ]; then
+			$PEERFLIX "$B" -i $N $PLAY
+		else
+			youtube-dl "$B" -o $VIDEO &
+			sleep 30
+			x-terminal-emulator -e "$PG $PLAY $VIDEO"
+		fi
 		#verifica la hora, si no paso mucho retoma
 		[ "$(($(date +%s)-$DATE))" -gt "120" ] && break
 		mensaje "Ups! Conexión lenta..."

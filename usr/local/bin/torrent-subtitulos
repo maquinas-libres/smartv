@@ -5,7 +5,6 @@
 
 NOMBRE="$1"
 IMDB="$2"
-MD5SUB=$(echo "$NOMBRE" | md5sum | cut -d" " -f1)
 
 cd $(mktemp -d)
 
@@ -20,11 +19,21 @@ mensaje "Buscando subtitulos $IMDB"
 mkdir -p ~/.cache/sub/$IMDB/
 DIR="$HOME/.cache/sub/$IMDB/"
 
+A=$(echo $NOMBRE | cut -c 1-4)
+
 # baja todos los subtitulos
 # mira cual es que ocupa mas tiempo
 # y usa el mas largo (suelen ser los mejores)
 touch "$NOMBRE" &
-subdl --download=all --lang=spa --imdb-id=$IMDB --force-imdb "$NOMBRE"
+# tengo que hacer una excepsion para las series
+subdl --download=none --lang=spa --imdb-id=$IMDB --force-imdb "$NOMBRE" \
+| grep -i "\"\ $A" \
+| grep -vi " ep [0-9]" | grep -vi "[0-9]x[0-9]" \
+| while read S; do
+	# solo baja subtitulos sin "ep"
+	ID=$(echo $S | cut -d" " -f1 | sed 's/[^0-9]//g')
+	[ ! "$ID" == "" ] && subdl --download=$ID  --output=$ID  --lang=spa --imdb-id=$IMDB --force-imdb "$NOMBRE"
+done
 rm "$NOMBRE"
 
 [ "$(ls)" == "" ] && exit
@@ -49,6 +58,8 @@ s/^.*AllSubs.org/.../g;" "$L"
 mv -v "$L" "$DIR/$N"
 N=$((N=N+1))
 
+[ "$N" == "4" ] && break
+
 done
 
 exit
@@ -56,5 +67,6 @@ exit
 Quehaceres
 ==========
 
+* mejorar la eliminacion de publicidad
 * verificar como levantar subtitulos adjuntos
 * descargar todos y levantarlos con un switch
