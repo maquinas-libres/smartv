@@ -87,30 +87,25 @@ Juegos
 ------
 
 * juntar por colores: gweld
-* rompecabeza: pysol (es medio feo)
-* aventura simple (mario 1 o bubble)
 * tableto: gtkboard, xmahjongg
+* solitario: pysol (es medio feo)
+* aventura simple (mario 1 o bubble)
 
 Quehaceres
 ----------
 
-* musica esta mal como se generan los links
-* bajar la pelicula basado en los subtitulos (X)
+* xbindkeys:
+  * cambiar de zoom (dbus)
+  * cambiar de subtitulos (script)
+* generar series (esta por la mitad)
 * normalizar el volumen
-* si las peliculas tienen muestra, elegir la mas grande (X)
-* opciones de zoom
-* opciones de idioma (subtitulos o doblada forzada)
-* quitar sombra a los subtitulos
-* vblog con lista de sitios (host:)
-* generar cache de las busquedas
-* mirar torrent-mount para la musica
-* poner pausa al X11 mientras reproduce una pelicula
-  * o poner en pausa al pidgin
+* musica esta mal como se generan los links
+* generar cache wget y link
+* poner en pausa al pidgin
 * mascota
 
 mirar esto:
 
-* teclado: http://ozzmaker.com/virtual-keyboard-for-the-raspberry-pi/?utm_source=feedly
+* teclado: http://ozzmaker.com/virtual-keyboard-for-the-raspberry-pi/?utm_source=feedly o wish
 * https://github.com/Ivshti/stremio-addons-client
 * https://www.npmjs.com/package/multipass-torrent
-
