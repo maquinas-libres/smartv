@@ -110,9 +110,12 @@ if [ ! "$PELICULAS" == "" ]; then
 	touch ~/.cache/sub/$2/0
 	(sleep 15; while [ ! $(pgrep $PG) ]; do  mensaje "Esperando más pares..."; sleep 15; done) &
 	#guarda la hora
+	VIDEO="/tmp/video"
+	rm /tmp/video 2> /dev/null
 	DATE="$(date +%s)"
 	for R in {1..5}; do
-		$PEERFLIX "$B" -i $N $PLAY #&& killall feh
+		[ "$(echo $B | grep '^magnet')" == "" ] && $PEERFLIX "$B" -i $N $PLAY || \
+		(youtube-dl "$B" -o $VIDEO &; sleep 30; x-terminal-emulator -e "$PG $PLAY $VIDEO")
 		#verifica la hora, si no paso mucho retoma
 		[ "$(($(date +%s)-$DATE))" -gt "120" ] && break
 		mensaje "Ups! Conexión lenta..."

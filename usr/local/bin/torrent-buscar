@@ -46,7 +46,7 @@ torrentz-dl $(echo "$NOMBRE" | sed 's/....$//') peerflix \
 echo "$BUSQUEDA" > /dev/stderr
 
 # aca puede comenzar con dd-dl
-#[ "$BUSQUEDA" == "" ] && (dd-dl "$NOMBRE" "gnula.nu" | sed 's/\t.*$//g'; exit)
+[ "$BUSQUEDA" == "" ] && (dd-dl "$NOMBRE" "gnula.nu" | sed 's/\t.*$//g'; exit)
 
 # busquedas mas filtros
 # esto moverlo a .torrent-buscar/ o algo asi
