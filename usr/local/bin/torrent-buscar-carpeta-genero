@@ -48,13 +48,13 @@ western	Oeste" | sort -R| while read G; do
 
 echo "[Desktop Entry]
 Version=1.0
-Name=. Buscar
+Name=. Buscar .
 Comment=Buscar más peliculas
 TryExec=$PROGRAMA
 Exec=$PROGRAMA $GENERO
 Icon=parole
 StartupNotify=true
-Type=Application" > $VIDEO/$DIR/buscar.desktop
+Type=Application" > "$VIDEO/$DIR/buscar.desktop"
 
 # genera el genero que le pidan
 torrent-buscar-carpeta $GENERO "" "$VIDEO/$DIR/"
@@ -66,7 +66,7 @@ torrent-buscar-carpeta "+" "" "$VIDEO/Películas/Italianas" "" "it"
 
 echo "[Desktop Entry]
 Version=1.0
-Name=. Buscar
+Name=Buscar
 Comment=Buscar más peliculas
 TryExec=$PROGRAMA
 Exec=$PROGRAMA "+"
