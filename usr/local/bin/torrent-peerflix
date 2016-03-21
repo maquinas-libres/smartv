@@ -6,6 +6,7 @@
 [ "$(pgrep feh)" ] && exit
 # si existe otro torrent-peerflix se lo cancela
 
+killall torrent-buscar
 killall peerflix
 killall feh
 
@@ -63,18 +64,19 @@ mensaje "¡Torrent encontrado!"
 
 mensaje "Analizando Torrent..." > /dev/stderr
 
+# la dd la extructura para que paresca peerflix
+[ "$(echo $B | grep '^magnet')" == "" ] && TITULO="1 :$1.mp4 "
 
 function lista () {
 	zenity --title "Lista de archivos" --list --text="Seleciones un o más archivos de descargar" --hide-header --column N --column TITULO --column peso  --hide-column=1 | cut -d"|" -f1
 	# falta agregar el tipo de archivo
 }
-# identificar el mimetype
 
+# identificar el mimetype
 # peliculas
 # avi mp4 mkv ogv ogg wmv mov m4v mpg mpeg
 PELICULAS=$(echo "$TITULO"| grep -i "\.\(avi\|mp4\|mkv\|m4v\|og.\|wmv\|mov\|divx\|vob\)\ " | grep -iv "sample" )
 if [ ! "$PELICULAS" == "" ]; then
-
 	CANTIDAD=$(echo "$PELICULAS" | wc -l)
 	# si es una serie elegis, si no busca el unico video y solo baja eso
 	[ "$CANTIDAD" -gt "1" ] && \
@@ -97,7 +99,6 @@ if [ ! "$PELICULAS" == "" ]; then
 	PSUB=" --subtitles ~/.cache/sub/$2/0 "
 	SUB="-sub ~/.cache/sub/$2/0 "
 
-
 	[ -x "$(which mpv)" ] && PLAY="-k -- -$SUB -fs"  && PG="mpv"
 	[ -x "$(which mplayer)" ] && PLAY="-m -- -utf8 $SUB -fs" && PG="mplayer"
 	[ -x "$(which omxplayer)" ] && PLAY="-o -- --align center --vol 6 --timeout 30 $PSUB " && PG="omxplayer"
@@ -110,17 +111,24 @@ if [ ! "$PELICULAS" == "" ]; then
 	touch ~/.cache/sub/$2/0
 	(sleep 15; while [ ! $(pgrep $PG) ]; do  mensaje "Esperando más pares..."; sleep 15; done) &
 	#guarda la hora
-	VIDEO="/tmp/video"
-	rm /tmp/video 2> /dev/null
 	DATE="$(date +%s)"
 	for R in {1..5}; do
 		if [ ! "$(echo $B | grep '^magnet')" == "" ]; then
 			$PEERFLIX "$B" -i $N $PLAY
 		else
-			youtube-dl "$B" -o $VIDEO &
-			sleep 30
-			x-terminal-emulator -e "$PG $PLAY $VIDEO"
-		fi
+                        VIDEO="/tmp/video"
+			N=1
+                        echo "$B" | uniq | while read V; do
+				killall youtube-dl
+                                rm $VIDEO 2> /dev/null
+                                mensaje "${N}/$(echo "$B" | wc -l) $V"
+				# esto solo funciona en mplayer por ahora
+                                youtube-dl --min-filesize 150m -o $VIDEO $V &
+                                sleep 15
+				$PG -fs -utf8 $SUB $VIDEO.part
+				N=$((N=N+1))
+                        done
+                fi
 		#verifica la hora, si no paso mucho retoma
 		[ "$(($(date +%s)-$DATE))" -gt "120" ] && break
 		mensaje "Ups! Conexión lenta..."

@@ -46,16 +46,17 @@ wget "https://www.imdb.com/search/title?count=200&sort=num_votes,desc&title_type
 	# comprobar si esta en torrentz.eu
 	LOW="$(echo "$A" | cut -d "	" -f3)"
 	MED="$(echo "$URL" | sed 's/@.*$/@._V1._SY256_.jpg/')"
-	if [ ! -f ~/.cache/imdb/$ID.jpg ]; then
+	if [ ! -f $IMG ]; then
 		URL=$(lynx -dump https://www.imdb.com/title/tt$ID/ -nonumbers | grep www.imdb.com/media/ | grep $ID | head -n1)
 		sleep 1
 		HD=$(lynx -dump $URL -image_links -nonumbers | grep "media-imdb.com.*\.jpg$" | head -n2 | tail -n1)
 		# descarga en hd si no puede en lw y si no, no genera el link, si da error continua
 		wget -t 1 "$HD" -qO $IMG || wget -t 1 "$MED" -qO $IMG || wget -t 1 "$LOW" -qO $IMG || (rm $IMG; continue)
 	fi
+
+	[ ! -f $IMG ] && continue
 	NOMBRE=$(echo "$A" | cut -d "	" -f2 | sed 's/#xed/#xed;/g' | recode html..utf8 | sed 's/[^a-zA-Z0-9¿?¡!\.\,()\ ]//g; s/^\ *//g; s/,$//g;s/^u//')
 
-[ ! -f ~/.cache/imdb/$ID.jpg ] && continue
 echo "[Desktop Entry]
 Version=1.0
 Name=$NOMBRE
@@ -66,8 +67,6 @@ Icon=$IMG
 StartupNotify=true
 Type=Application" > "$VIDEO/$ID.desktop"
 
-
 	echo $URL > /dev/stderr
 	echo $NOMBRE > /dev/stderr
-	sleep 2
 done

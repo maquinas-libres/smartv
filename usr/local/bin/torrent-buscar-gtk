@@ -3,7 +3,6 @@
 #	clon de torrent-search
 #
 
-
 TIPO=$1
 TITULO=$2
 
@@ -23,19 +22,13 @@ fi
 
 [ "$TITULO" == "" ] && exit
 # lista ordenada por pares
-HASH=$(torrentz-dl "$TITULO" "$TIPO" \
-	| sort -nrk2 \
-	| sed 's/\t/\n/g' \
-	| zenity --list --column Hash --column Pares --column Peso --column Nombre --multiple \
+torrentz-dl "$TITULO" "$TIPO" \
+| sort -nrk2 \
+| sed 's/\t/\n/g' \
+| zenity --list --column Hash --column Pares --column Peso --column Nombre --multiple --separator=" " \
 --hide-column=1 --text="Selecione uno o mas elementos de la lista para descargar" --ok-label="Descargar" \
-	| cut -d'|' -f1)
-
-#torrent-mount ?
-echo $HASH
-
-[ "$HASH" == "" ] && exit
-
-# preguntar si descargar o ver si tiene muchos pares
-
-[ "$TIPO" == "peerflix" ] && torrent-peerflix "magnet:?xt=urn:btih:$HASH"
-[ ! "$TIPO" == "peerflix" ] && transmission-gtk "magnet:?xt=urn:btih:${HASH}"
+| sed 's/\ /\n/g' | while read HASH; do
+	# descarga/ve la lista si la hay
+	[ "$TIPO" == "peerflix" ] && torrent-peerflix "magnet:?xt=urn:btih:$HASH"
+	[ ! "$TIPO" == "peerflix" ] && transmission-gtk "magnet:?xt=urn:btih:${HASH}" &
+done

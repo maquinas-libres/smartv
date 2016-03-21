@@ -31,22 +31,29 @@ BLANCA="$HOME/.blanca"
 
 mensaje "Buscando doblada"
 
-BUSQUEDA=$(torrentz-dl "\"${NOMBRE}\"|\"${NORIGINAL}\"+${ANO}+latino|español|spanish+-sub+-subtitles+-subtitulos" peerflix)
+BUSQUEDA=$(torrentz-dl "\"${NOMBRE}\"|\"${NORIGINAL}\"+latino|español|spanish+-sub+-subtitles+-subtitulos" peerflix)
 
 echo "$BUSQUEDA" > /dev/stderr
-mensaje " no disponible..."
-mensaje "Buscando subtitulada"
 
+# aca s podria poner una excepcion si no queres en lenguaje original
 [ "$BUSQUEDA" == "" ] && BUSQUEDA=$( \
 torrentz-dl "\"$NOMBRE\"|\"${NORIGINAL}\"+${ANO}" peerflix; \
 [ ! "$IMDB" == "" ] && kickass-dl $IMDB; \
 torrentz-dl $(echo "$NOMBRE" | sed 's/....$//') peerflix \
-)
+) && mensaje "...no disponible..." && mensaje "Buscando subtitulada"
+
 
 echo "$BUSQUEDA" > /dev/stderr
 
 # aca puede comenzar con dd-dl
-[ "$BUSQUEDA" == "" ] && (dd-dl "$NOMBRE" "gnula.nu" | sed 's/\t.*$//g'; exit)
+if [ "$BUSQUEDA" == "" ]; then
+	youtube-lt "\"$NOMBRE\" completa" | grep -i "$NOMBRE" | cut -d"	" -f1 | sort -u
+	youtube-lt "\"$NORIGINAL\" fullmovie" | grep -i "$NORIGINAL" | cut -d"	" -f1 | sort -u
+	dd-dl "$NOMBRE" "gnula.nu" | cut -d"	" -f1 | sort -u
+	dd-dl "\"$NORIGINAL\" ver online" | cut -d"	" -f1 | sort -u
+	mensaje "Descarga directa";
+	exit
+fi
 
 # busquedas mas filtros
 # esto moverlo a .torrent-buscar/ o algo asi
@@ -56,9 +63,8 @@ HASH=$(echo "BUSQUEDA" | grep -iv -f $NEGRA - | grep -i -f $BLANCA - | head -n1 
 [ "$HASH" == "" ] && HASH=$(echo "$BUSQUEDA" | grep -iv -f $NEGRA - | head -n1 | cut -d"	" -f1)
 
 # devuelve el hash y guarda el cache
-[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE
-mensaje "Pares: $(echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2)"
-echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2 > /tmp/pares
+[ ! "$HASH" == "" ] && echo "magnet:?xt=urn:btih:${HASH}"| tee /tmp/$NOMBRE \
+&& mensaje "Pares: $(echo "$BUSQUEDA" | grep $HASH | head -n1 | cut -d"	" -f2)"
 
 
 

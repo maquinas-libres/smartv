@@ -62,6 +62,8 @@ N=$((N=N+1))
 
 done
 
+mensaje "Subtitulos procesados"
+
 exit
 
 Quehaceres

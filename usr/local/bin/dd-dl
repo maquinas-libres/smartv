@@ -4,13 +4,15 @@
 #	requiere: lynx, wget
 
 # tal vez cambiar esto por .dd-dl o algo asi
-BUSCAR="https://www.startpage.com/do/m/mobilesearch?q=\"${1}\"%20host%3A${2}"
+BUSCAR="https://www.startpage.com/do/m/mobilesearch?q=${1}"
+[ "$HOST" == "" ] && BUSCAR="https://www.startpage.com/do/m/mobilesearch?q=\"${1}\"%20host%3A${2}"
+[ "$HOST" == "" ] && N=10 || N=1
 
 lynx "$BUSCAR" -listonly -dump -nonumbers -hiddenlinks=ignore \
 | grep -v startpage \
 | grep "/.*/.*/.*/" \
 | grep "$HOST" \
-| head -n 1 \
+| head -n $N \
 | while read L; do
 	DOMINIO="$(echo $L | cut -d"/" -f1-3)"
 	echo $L > /dev/stderr
@@ -34,7 +36,7 @@ lynx "$BUSCAR" -listonly -dump -nonumbers -hiddenlinks=ignore \
 	| grep -iv anality \
 	| while read J; do
 		# enlace al estilo de torrentz-dl
-		echo "$J     ?  ?       $L"
+		[ ! "$J" == "$L" ] && echo "$J	?	?	$L"
 	done | sort -u
 done
 
