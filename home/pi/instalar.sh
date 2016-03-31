@@ -22,6 +22,13 @@ sudo aptitude install -y
 sudo npm -g install peerflix
 sudo pip install --upgrade youtube-dl
 
+
+sudo cp -vr smartv-master/home/pi /home/
+sudo cp -vr smartv-master/etc/* /etc/
+sudo cp -vr smartv-master/usr/local/* /usr/local/
+sudo cp -vr smartv-master/boot/* /boot/
+
 # tema Mona en gtk-3.0
 rm ~/.config/gtk-3.0/gtk.css
 ln -s ~/.themes/Mona\ 3.0/gtk-3.0/gtk.css ~/.config/gtk-3.0/gtk.css
+
