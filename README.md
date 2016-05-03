@@ -64,11 +64,9 @@ Que tiene
 * **tema:** [moka](http://gnome-look.org/content/download.php?content=168447&id=1&tan=71798382)
 * **subtitulo:** [subdl](https://github.com/akexakex/subdl)
 * **reproductor:** omxplayer, mpv, mplayer
-* **buscador:** torrent-search.sf.net	→ python-libxml2 python-httplib2
 * **streaming:** * peerflix	
-* **descarga:** transmission	→ grabar en videos una vez terminada la descarga
+* **descarga:** transmission o uget+aria2	→ grabar en videos una vez terminada la descarga
 * **filesharing:** youtube-dl
-* **mensajes:** notify-send	→ se necesita una ventana interior
 
 extras
 ------
@@ -77,11 +75,14 @@ extras
 * **Clima:** conky
 * **historietas:** comix
 * **pdf:** evince
-* **texto:** openoffice fbreader
+* **texto:** fbreader / navegador / evince
+  * docx -> docx2txt  -> html
+  * doc -> antiword -> markdown -> html
+  * xls: ?
 * **chat:** pidgin
 * **correo:** geary
 * **privacidad:** tor
-* **Noticias:** liferea
+* **Noticias:** rsstail
 
 Juegos
 ------
@@ -91,10 +92,24 @@ Juegos
 * solitario: pysol (es medio feo)
 * aventura simple (mario 1 o bubble)
 
+Extructura
+----------
+
+* *-lt: listas de busquedas	(torrentz-lt, kickass-lt, dd-lt, imdb-lt, starpage-lt)
+* *-dl: descarga	(youtube-dl)
+* torrent-*: basado en torrent
+* *-carpeta-*: genera carpetas	(video, youtube, serie, musica)
+* desktop: lanzadores
+
+
 Quehaceres
 ----------
 
+* filtrar el año siempre
+* foco para usar teclado, siempre en ventana arriba de todas
+* listas mas faciles de maneras, unificar todo
 * xbindkeys:
+  * decargar
   * cambiar de zoom (dbus)
   * cambiar de subtitulos (script)
 * generar series (esta por la mitad)
@@ -102,6 +117,7 @@ Quehaceres
 * musica esta mal como se generan los links
 * generar cache wget y link
 * poner en pausa al pidgin
+* lector de noticias
 * mascota
 
 mirar esto:
@@ -109,3 +125,7 @@ mirar esto:
 * teclado: http://ozzmaker.com/virtual-keyboard-for-the-raspberry-pi/?utm_source=feedly o wish
 * https://github.com/Ivshti/stremio-addons-client
 * https://www.npmjs.com/package/multipass-torrent
+
+--
+
+**Bitcoin:** 19qkh5dNVxL58o5hh6hLsK64PwEtEXVHXs
