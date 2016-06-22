@@ -54,62 +54,36 @@ Que tiene
 * **iconos:** mate-icon-theme-faenza
 * **tema:** [moka](http://gnome-look.org/content/download.php?content=168447&id=1&tan=71798382)
 * **subtitulo:** [subdl](https://github.com/akexakex/subdl)
-* **reproductor:** omxplayer, mpv, mplayer
+* **reproductor:** omxplayer o mpv
 * **streaming:** * peerflix	
-* **descarga:** transmission o uget+aria2	→ grabar en videos una vez terminada la descarga
+* **descarga:** transmission
 * **filesharing:** youtube-dl
 
 extras
 ------
 
 * **navegador:** epiphany
-* **Clima:** conky
-* **historietas:** comix
+* **historietas:** evince
 * **pdf:** evince
-* **texto:** fbreader / navegador / evince
-  * docx -> docx2txt  -> html
-  * doc -> antiword -> markdown -> html
-  * xls: ?
+* **texto:** evince
 * **chat:** pidgin
 * **correo:** geary
 * **privacidad:** tor
 * **Noticias:** rsstail
-
-Juegos
-------
-
-* juntar por colores: gweld
-* tableto: gtkboard, xmahjongg
-* solitario: pysol (es medio feo)
-* aventura simple (mario 1 o bubble)
-
-Extructura
-----------
-
-* *-lt: listas de búsquedas	(torrentz-lt, kickass-lt, dd-lt, imdb-lt, starpage-lt)
-* *-dl: descarga	(youtube-dl)
-* torrent-*: basado en torrent
-* *-carpeta-*: genera carpetas	(video, youtube, serie, musica)
-* desktop: lanzadores
+* **Clima:** conky
 
 
 Quehaceres
 ----------
 
-* buscar subtitulos con sublime
 * filtrar el año siempre
-* foco para usar teclado, siempre en ventana arriba de todas
-* listas mas faciles de maneras, unificar todo
 * combinación de teclas:
   * descargar
   * cambiar de zoom (dbus)
-  * cambiar de subtítulos (script)
-* generar series (esta por la mitad)
-* normalizar el volumen
-* generar cache wget y link
-* poner en pausa al pidgin
-* lector de noticias
-* mascota
+  * cambiar de subtítulos (script) 
+* generar series (esta por la mitad) 
+* lector de noticias 
+* probar buscar subtitulos con sublime
 
 mirar esto:
 
