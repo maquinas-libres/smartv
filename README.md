@@ -1,7 +1,7 @@
 SmartTV en GNU (realmente inteligente)
 ======================================
 
-Es un conjunto de aplacaciones para armar tu televisor realmente inteligente, o sea descarga y reproduce series, peliculas y musica de torrent.
+Es un conjunto de aplicaciones para armar tu televisor realmente inteligente, o sea descarga y reproduce series, peliculas y musica de torrent.
 
 ![inicio](img/inicio.png)
 
@@ -12,24 +12,15 @@ Como usarlo
 
 ![presentacion](img/presentacion.png)
 
-![mira](img/mira.png)
-
-Novedades
----------
-
-![feed](img/novedades.png)
-
 Aplicaciones
 ------------
 
 ![feed](img/aplicaciones.png)
 
-Buscar videos
--------------
+Buscar videos y películas
+-------------------------
 
-![busca](img/buscar.png)
-	
-Busca peliculas en imdb y genera archivos `.desktop` en un carpeta al presionar sobre ellos se busca la pelicula en `torrent-search`.
+Busca películas en **imdb** y genera archivos `.desktop` en un carpeta al presionar sobre ellos se busca la película en `torrent-search`.
 Este se renueva cada X cantidad de tiempo.
 
 
@@ -49,12 +40,12 @@ Correr
 torrent-buscar-carpeta-genero
 ~~~
 
-Esto genera los lanzadores de peliculas en `~/Vídeos/Películas`
+Esto genera los lanzadores de películas en `~/Vídeos/Películas`
 
 Instalar en raspberry
 =====================
 
-Generar una microsd de raspberian y luego compiar las carpetas `home`, iniciar la raspberry y correr `~/instalar.sh`
+Generar una microsd de raspberian y luego copiar las carpetas `home`, iniciar la raspberry y correr `~/instalar.sh`
 
 Que tiene
 =========
@@ -95,7 +86,7 @@ Juegos
 Extructura
 ----------
 
-* *-lt: listas de busquedas	(torrentz-lt, kickass-lt, dd-lt, imdb-lt, starpage-lt)
+* *-lt: listas de búsquedas	(torrentz-lt, kickass-lt, dd-lt, imdb-lt, starpage-lt)
 * *-dl: descarga	(youtube-dl)
 * torrent-*: basado en torrent
 * *-carpeta-*: genera carpetas	(video, youtube, serie, musica)
@@ -105,16 +96,16 @@ Extructura
 Quehaceres
 ----------
 
+* buscar subtitulos con sublime
 * filtrar el año siempre
 * foco para usar teclado, siempre en ventana arriba de todas
 * listas mas faciles de maneras, unificar todo
-* xbindkeys:
-  * decargar
+* combinación de teclas:
+  * descargar
   * cambiar de zoom (dbus)
-  * cambiar de subtitulos (script)
+  * cambiar de subtítulos (script)
 * generar series (esta por la mitad)
 * normalizar el volumen
-* musica esta mal como se generan los links
 * generar cache wget y link
 * poner en pausa al pidgin
 * lector de noticias
